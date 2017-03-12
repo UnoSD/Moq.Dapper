@@ -2,7 +2,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 
 [assembly: AssemblyTitle("Moq.Dapper")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Moq extensions for Dapper methods.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("Moq.Dapper")]

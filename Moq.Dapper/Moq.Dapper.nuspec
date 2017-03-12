@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>$id$</id>
+    <version>$version$</version>
+    <title>$title$</title>
+    <authors>Stefano d'Antonio</authors>
+    <owners>Stefano d'Antonio</owners>
+    <licenseUrl>https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html</licenseUrl>
+    <projectUrl>https://github.com/UnoSD/Moq.Dapper</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Moq extensions for Dapper methods.</description>
+    <releaseNotes>First release.</releaseNotes>
+    <copyright>Copyright 2017</copyright>
+    <tags>Moq Dapper Test</tags>
+  </metadata>
+</package>

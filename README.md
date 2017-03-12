@@ -1,6 +1,8 @@
 # Moq.Dapper
 Moq extensions for Dapper methods.
 
+NuGet: https://www.nuget.org/packages/Moq.Dapper/
+
 # Example usage
 
 Mocking a call to `Query` with a simple type:
