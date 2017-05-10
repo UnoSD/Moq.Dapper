@@ -66,6 +66,21 @@ namespace Moq.Dapper.Test
 
             Assert.That(actual, Is.EqualTo(expected));
         }
+        
+        [Test]
+        public void ExecuteScalarWithParameters()
+        {
+            var connection = new Mock<IDbConnection>();
+
+            const int expected = 77;
+
+            connection.SetupDapper(c => c.ExecuteScalar<int>(It.IsAny<string>(), null, null, null, null))
+                      .Returns(expected);
+
+            var actual = connection.Object.ExecuteScalar<int>("select @id", new { id = 1 }, null, null);
+
+            Assert.That(actual, Is.EqualTo(expected));
+        }
 
         [Test]
         public void NonDapperMethodException()
