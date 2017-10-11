@@ -51,11 +51,27 @@ namespace Moq.Dapper
                                }
                                else
                                {
-                                   var valuesFactory = type.GetProperties()
-                                                           .Where(info => info.CanRead && (info.PropertyType.IsPrimitive || info.PropertyType == typeof(string)))
-                                                           .ToDictionary(info => info.Name, info => (Func<object, object>) info.GetValue);
+                                   var properties = type.GetProperties()
+                                       .Where(info =>
+                                           info.CanRead
+                                           && (info.PropertyType.IsPrimitive
+                                           || info.PropertyType == typeof(DateTime)
+                                           || info.PropertyType == typeof(DateTimeOffset)
+                                           || info.PropertyType == typeof(DateTime)
+                                           || info.PropertyType == typeof(decimal)
+                                           || info.PropertyType == typeof(Guid)
+                                           || info.PropertyType == typeof(string)
+                                           || info.PropertyType == typeof(TimeSpan)))
+                                        .ToList();
 
-                                   dataTable.Columns.AddRange(valuesFactory.Keys.Select(name => new DataColumn(name)).ToArray());
+                                   var columnNamesAndTypes = properties.ToDictionary(info => info.Name, info => info.PropertyType);
+
+                                   foreach (var column in columnNamesAndTypes)
+                                   {
+                                       dataTable.Columns.Add(new DataColumn(column.Key, column.Value));
+                                   }
+
+                                   var valuesFactory = properties.ToDictionary(info => info.Name, info => (Func<object, object>)info.GetValue);
 
                                    foreach (var element in enumerable)
                                        dataTable.Rows.Add(valuesFactory.Values.Select(getValue => getValue(element)).ToArray());

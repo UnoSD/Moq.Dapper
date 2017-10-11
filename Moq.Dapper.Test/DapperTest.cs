@@ -1,4 +1,5 @@
-﻿using System.Data;
+﻿using System;
+using System.Data;
 using System.Linq;
 using Dapper;
 using NUnit.Framework;
@@ -32,9 +33,27 @@ namespace Moq.Dapper.Test
 
             var expected = new[]
             {
-                new ComplexType { StringProperty = "String1", IntegerProperty = 7 },
-                new ComplexType { StringProperty = "String2", IntegerProperty = 77 },
-                new ComplexType { StringProperty = "String3", IntegerProperty = 777 }
+                new ComplexType
+                {
+                    StringProperty = "String1",
+                    IntegerProperty = 7,
+                    GuidProperty = Guid.Parse("CF01F32D-A55B-4C4A-9B33-AAC1C20A85BB"),
+                    DateTimeProperty = new DateTime(2000, 1, 1)
+                },
+                new ComplexType
+                {
+                    StringProperty = "String2",
+                    IntegerProperty = 77,
+                    GuidProperty = Guid.Parse("FBECE122-6E2E-4791-B781-C30843DFE343"),
+                    DateTimeProperty = new DateTime(2000, 1, 1)
+                },
+                new ComplexType
+                {
+                    StringProperty = "String3",
+                    IntegerProperty = 777,
+                    GuidProperty = Guid.Parse("712B6DA1-71D8-4D60-8FEF-3F4800A6B04F"),
+                    DateTimeProperty = new DateTime(2000, 1, 1)
+                }
             };
 
             connection.SetupDapper(c => c.Query<ComplexType>(It.IsAny<string>(), null, null, true, null, null))
@@ -46,7 +65,11 @@ namespace Moq.Dapper.Test
 
             foreach (var complexObject in expected)
             {
-                var match = actual.Where(co => co.StringProperty == complexObject.StringProperty && co.IntegerProperty == complexObject.IntegerProperty);
+                var match = actual.Where(
+                    co => co.StringProperty == complexObject.StringProperty
+                    && co.IntegerProperty == complexObject.IntegerProperty
+                    && co.GuidProperty == complexObject.GuidProperty
+                    && co.DateTimeProperty == complexObject.DateTimeProperty);
 
                 Assert.That(match.Count, Is.EqualTo(1));
             }
@@ -97,6 +120,8 @@ namespace Moq.Dapper.Test
         {
             public int IntegerProperty { get; set; }
             public string StringProperty { get; set; }
+            public Guid GuidProperty { get; set; }
+            public DateTime DateTimeProperty { get; set; }
         }
     }
 }
