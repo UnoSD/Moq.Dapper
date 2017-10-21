@@ -45,14 +45,14 @@ namespace Moq.Dapper.Test
                     StringProperty = "String2",
                     IntegerProperty = 77,
                     GuidProperty = Guid.Parse("FBECE122-6E2E-4791-B781-C30843DFE343"),
-                    DateTimeProperty = new DateTime(2000, 1, 1)
+                    DateTimeProperty = new DateTime(2000, 1, 2)
                 },
                 new ComplexType
                 {
                     StringProperty = "String3",
                     IntegerProperty = 777,
                     GuidProperty = Guid.Parse("712B6DA1-71D8-4D60-8FEF-3F4800A6B04F"),
-                    DateTimeProperty = new DateTime(2000, 1, 1)
+                    DateTimeProperty = new DateTime(2000, 1, 3)
                 }
             };
 
