@@ -65,11 +65,10 @@ namespace Moq.Dapper.Test
 
             foreach (var complexObject in expected)
             {
-                var match = actual.Where(
-                    co => co.StringProperty == complexObject.StringProperty
-                    && co.IntegerProperty == complexObject.IntegerProperty
-                    && co.GuidProperty == complexObject.GuidProperty
-                    && co.DateTimeProperty == complexObject.DateTimeProperty);
+                var match = actual.Where(co => co.StringProperty == complexObject.StringProperty &&
+                                               co.IntegerProperty == complexObject.IntegerProperty &&
+                                               co.GuidProperty == complexObject.GuidProperty &&
+                                               co.DateTimeProperty == complexObject.DateTimeProperty);
 
                 Assert.That(match.Count, Is.EqualTo(1));
             }

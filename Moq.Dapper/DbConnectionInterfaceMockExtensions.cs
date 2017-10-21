@@ -51,30 +51,28 @@ namespace Moq.Dapper
                                }
                                else
                                {
-                                   var properties = type.GetProperties()
-                                       .Where(info =>
-                                           info.CanRead
-                                           && (info.PropertyType.IsPrimitive
-                                           || info.PropertyType == typeof(DateTime)
-                                           || info.PropertyType == typeof(DateTimeOffset)
-                                           || info.PropertyType == typeof(DateTime)
-                                           || info.PropertyType == typeof(decimal)
-                                           || info.PropertyType == typeof(Guid)
-                                           || info.PropertyType == typeof(string)
-                                           || info.PropertyType == typeof(TimeSpan)))
-                                        .ToList();
+                                   var properties = 
+                                       type.GetProperties()
+                                           .Where(info => info.CanRead &&
+                                                          (info.PropertyType.IsPrimitive ||
+                                                           info.PropertyType == typeof(DateTime) ||
+                                                           info.PropertyType == typeof(DateTimeOffset) ||
+                                                           info.PropertyType == typeof(decimal) ||
+                                                           info.PropertyType == typeof(Guid) ||
+                                                           info.PropertyType == typeof(string) ||
+                                                           info.PropertyType == typeof(TimeSpan)))
+                                           .ToList();
+                                   
+                                   var columns = properties.Select(property => new DataColumn(property.Name, property.PropertyType))
+                                                           .ToArray();
 
-                                   var columnNamesAndTypes = properties.ToDictionary(info => info.Name, info => info.PropertyType);
+                                   dataTable.Columns.AddRange(columns);
 
-                                   foreach (var column in columnNamesAndTypes)
-                                   {
-                                       dataTable.Columns.Add(new DataColumn(column.Key, column.Value));
-                                   }
-
-                                   var valuesFactory = properties.ToDictionary(info => info.Name, info => (Func<object, object>)info.GetValue);
-
+                                   var valuesFactory = properties.Select(info => (Func<object, object>)info.GetValue)
+                                                                 .ToArray();
+                                   
                                    foreach (var element in enumerable)
-                                       dataTable.Rows.Add(valuesFactory.Values.Select(getValue => getValue(element)).ToArray());
+                                       dataTable.Rows.Add(valuesFactory.Select(getValue => getValue(element)).ToArray());
                                }
                                
                                return new DataTableReader(dataTable);
