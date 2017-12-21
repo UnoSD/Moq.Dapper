@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data;
+using System.Data.Common;
 using System.Linq;
 using Dapper;
 using NUnit.Framework;
@@ -10,6 +11,22 @@ namespace Moq.Dapper.Test
     [TestFixture]
     public class DapperTest
     {
+        [Test]
+        public void QueryAsyncGeneric()
+        {
+            var connection = new Mock<DbConnection>();
+
+            var expected = new[] { 7, 77, 777 };
+
+            connection.SetupDapperAsync(c => c.QueryAsync<int>(It.IsAny<string>(), null, null, null, null))
+                      .ReturnsAsync(expected);
+
+            var actual = connection.Object.QueryAsync<int>("").GetAwaiter().GetResult().ToList();
+            
+            Assert.That(actual.Count, Is.EqualTo(expected.Length));
+            Assert.That(actual, Is.EquivalentTo(expected));
+        }
+
         [Test]
         public void QueryGeneric()
         {
