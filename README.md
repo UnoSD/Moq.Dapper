@@ -74,3 +74,23 @@ public void ExecuteScalar()
     Assert.That(actual, Is.EqualTo(expected));
 }
 ```
+
+Mocking a call to `QueryAsync`
+
+```csharp
+[Test]
+public async Task QueryAsyncGeneric()
+{
+    var connection = new Mock<DbConnection>();
+
+    var expected = new[] { 7, 77, 777 };
+
+    connection.SetupDapperAsync(c => c.QueryAsync<int>(It.IsAny<string>(), null, null, null, null))
+              .ReturnsAsync(expected);
+
+    var actual = (await connection.Object.QueryAsync<int>("", null, null, true, null, null)).ToList();
+
+    Assert.That(actual.Count, Is.EqualTo(expected.Length));
+    Assert.That(actual, Is.EquivalentTo(expected));
+}
+```
