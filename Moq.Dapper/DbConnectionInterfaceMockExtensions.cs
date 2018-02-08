@@ -19,6 +19,8 @@ namespace Moq.Dapper
 
             switch (call.Method.Name)
             {
+                case nameof(SqlMapper.QueryFirstOrDefault):
+                    return SetupQuery<TResult>(mock);
                 case nameof(SqlMapper.ExecuteScalar):
                     return SetupExecuteScalar<TResult>(mock);
                 case nameof(SqlMapper.Query):
@@ -29,18 +31,21 @@ namespace Moq.Dapper
         }
 
         private static ISetup<IDbConnection, TResult> SetupQuery<TResult>(Mock<IDbConnection> mock) =>
-            SetupCommand<TResult>(mock, (commandMock, result) =>
+            SetupCommand<TResult>(mock, (commandMock, getResult) =>
             {
                 commandMock.Setup(command => command.ExecuteReader(It.IsAny<CommandBehavior>()))
                            .Returns(() =>
                            {
-                               // TResult must be IEnumerable if we're invoking SqlMapper.Query.
-                               var enumerable = (IEnumerable)result();
+                               var result = getResult();
+                               var results = result as IEnumerable;
+                               var enumerable = results ?? new[] { result };
 
                                var dataTable = new DataTable();
 
                                // Assuming SqlMapper.Query returns always generic IEnumerable<TResult>.
-                               var type = typeof(TResult).GenericTypeArguments.First();
+                               var type = results == null ? 
+                                          typeof(TResult) :
+                                          typeof(TResult).GenericTypeArguments.First();
 
                                if (type.IsPrimitive || type == typeof(string))
                                {
