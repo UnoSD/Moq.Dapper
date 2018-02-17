@@ -14,7 +14,8 @@ namespace Moq.Dapper
 {
     public static class DbConnectionMockExtensions
     {
-        public static ISetup<DbConnection, TResult> SetupDapper<TResult>(this Mock<DbConnection> mock, Expression<Func<DbConnection, TResult>> expression)
+        public static ISetup<DbConnection, TResult> SetupDapper<TResult>(this Mock<DbConnection> mock,
+            Expression<Func<DbConnection, TResult>> expression)
         {
             var call = expression.Body as MethodCallExpression;
 
@@ -28,7 +29,8 @@ namespace Moq.Dapper
             }
         }
 
-        public static ISetup<DbConnection, Task<TResult>> SetupDapperAsync<TResult>(this Mock<DbConnection> mock, Expression<Func<DbConnection, Task<TResult>>> expression)
+        public static ISetup<DbConnection, Task<TResult>> SetupDapperAsync<TResult>(this Mock<DbConnection> mock,
+            Expression<Func<DbConnection, Task<TResult>>> expression)
         {
             var call = expression.Body as MethodCallExpression;
 
@@ -44,13 +46,16 @@ namespace Moq.Dapper
             }
         }
 
-        private static ISetup<DbConnection, Task<TResult>> SetupQueryAsync<TResult>(Mock<DbConnection> mock) =>
-            SetupCommandAsync<TResult>(mock, (commandMock, result) =>
+        private static ISetup<DbConnection, Task<TResult>> SetupQueryAsync<TResult>(Mock<DbConnection> mock)
+        {
+            return SetupCommandAsync<TResult>(mock, (commandMock, result) =>
             {
                 commandMock.Protected()
-                           .Setup<Task<DbDataReader>>("ExecuteDbDataReaderAsync", ItExpr.IsAny<CommandBehavior>(), ItExpr.IsAny<CancellationToken>())
-                           .ReturnsAsync(() => DbDataReader(result));
+                    .Setup<Task<DbDataReader>>("ExecuteDbDataReaderAsync", ItExpr.IsAny<CommandBehavior>(),
+                        ItExpr.IsAny<CancellationToken>())
+                    .ReturnsAsync(() => DbDataReader(result));
             });
+        }
 
         private static DbDataReader DbDataReader<TResult>(Func<TResult> result)
         {
@@ -72,20 +77,19 @@ namespace Moq.Dapper
             else
             {
                 var properties =
-                        type.GetProperties().
-                             Where
-                             (
-                              info => info.CanRead &&
-                                      (info.PropertyType.IsPrimitive ||
-                                       info.PropertyType == typeof(DateTime) ||
-                                       info.PropertyType == typeof(DateTimeOffset) ||
-                                       info.PropertyType == typeof(decimal) ||
-                                       info.PropertyType == typeof(Guid) ||
-                                       info.PropertyType == typeof(string) ||
-                                       info.PropertyType == typeof(TimeSpan))).
-                             ToList();
+                    type.GetProperties().Where
+                    (
+                        info => info.CanRead &&
+                                (info.PropertyType.IsPrimitive ||
+                                 info.PropertyType == typeof(DateTime) ||
+                                 info.PropertyType == typeof(DateTimeOffset) ||
+                                 info.PropertyType == typeof(decimal) ||
+                                 info.PropertyType == typeof(Guid) ||
+                                 info.PropertyType == typeof(string) ||
+                                 info.PropertyType == typeof(TimeSpan))).ToList();
 
-                var columns = properties.Select(property => new DataColumn(property.Name, property.PropertyType)).ToArray();
+                var columns = properties.Select(property => new DataColumn(property.Name, property.PropertyType))
+                    .ToArray();
 
                 dataTable.Columns.AddRange(columns);
 
@@ -98,24 +102,25 @@ namespace Moq.Dapper
             return new DataTableReader(dataTable);
         }
 
-        private static ISetup<DbConnection, Task<TResult>> SetupCommandAsync<TResult>(Mock<DbConnection> mock, Action<Mock<DbCommand>, Func<TResult>> mockResult)
+        private static ISetup<DbConnection, Task<TResult>> SetupCommandAsync<TResult>(Mock<DbConnection> mock,
+            Action<Mock<DbCommand>, Func<TResult>> mockResult)
         {
             var setupMock = new Mock<ISetup<DbConnection, Task<TResult>>>();
 
             var result = default(TResult);
-            
+
             setupMock.Setup(setup => setup.Returns(It.IsAny<Func<Task<TResult>>>()))
-                     .Callback<Func<Task<TResult>>>(r => result = r().Result);
+                .Callback<Func<Task<TResult>>>(r => result = r().Result);
 
             var commandMock = new Mock<DbCommand>();
 
             commandMock.Protected()
-                       .SetupGet<DbParameterCollection>("DbParameterCollection")
-                       .Returns(new Mock<DbParameterCollection>().Object);
+                .SetupGet<DbParameterCollection>("DbParameterCollection")
+                .Returns(new Mock<DbParameterCollection>().Object);
 
             commandMock.Protected()
-                       .Setup<DbParameter>("CreateDbParameter")
-                       .Returns(new Mock<DbParameter>().Object);
+                .Setup<DbParameter>("CreateDbParameter")
+                .Returns(new Mock<DbParameter>().Object);
 
             mockResult(commandMock, () => result);
 
