@@ -1,10 +1,10 @@
-﻿using System;
+﻿using Dapper;
+using Moq.Language.Flow;
+using System;
 using System.Collections;
 using System.Data;
 using System.Linq;
 using System.Linq.Expressions;
-using Dapper;
-using Moq.Language.Flow;
 
 namespace Moq.Dapper
 {
@@ -25,6 +25,8 @@ namespace Moq.Dapper
                     return SetupExecuteScalar<TResult>(mock);
                 case nameof(SqlMapper.Query):
                     return SetupQuery<TResult>(mock);
+                case nameof(SqlMapper.Execute):
+                    return SetupExecute<TResult>(mock);
                 default:
                     throw new NotSupportedException();
             }
@@ -43,7 +45,7 @@ namespace Moq.Dapper
                                var dataTable = new DataTable();
 
                                // Assuming SqlMapper.Query returns always generic IEnumerable<TResult>.
-                               var type = results == null ? 
+                               var type = results == null ?
                                           typeof(TResult) :
                                           typeof(TResult).GenericTypeArguments.First();
 
@@ -73,15 +75,15 @@ namespace Moq.Dapper
                                        t == typeof(Guid) ||
                                        t == typeof(string) ||
                                        t == typeof(TimeSpan);
-                                   
-                                   var properties = 
+
+                                   var properties =
                                        type.GetProperties()
                                            .Where(info => info.CanRead &&
                                                           IsMatchingType(info.PropertyType) ||
                                                           IsNullable(info.PropertyType) &&
                                                           IsMatchingType(Nullable.GetUnderlyingType(info.PropertyType)))
                                            .ToList();
-                                   
+
                                    var columns = properties.Select(property => new DataColumn(property.Name, GetDataColumnType(property.PropertyType)))
                                                            .ToArray();
 
@@ -89,11 +91,11 @@ namespace Moq.Dapper
 
                                    var valuesFactory = properties.Select(info => (Func<object, object>)info.GetValue)
                                                                  .ToArray();
-                                   
+
                                    foreach (var element in enumerable)
                                        dataTable.Rows.Add(valuesFactory.Select(getValue => getValue(element)).ToArray());
                                }
-                               
+
                                return new DataTableReader(dataTable);
                            });
             });
@@ -108,10 +110,10 @@ namespace Moq.Dapper
                      .Callback<TResult>(r => result = r);
 
             var commandMock = new Mock<IDbCommand>();
-            
+
             commandMock.SetupGet(a => a.Parameters)
                        .Returns(new Mock<IDataParameterCollection>().Object);
-            
+
             commandMock.Setup(a => a.CreateParameter())
                        .Returns(new Mock<IDbDataParameter>().Object);
 
@@ -127,5 +129,10 @@ namespace Moq.Dapper
             SetupCommand<TResult>(mock, (commandMock, result) =>
                 commandMock.Setup(command => command.ExecuteScalar())
                                                     .Returns(() => result()));
+
+        private static ISetup<IDbConnection, TResult> SetupExecute<TResult>(Mock<IDbConnection> mock) =>
+            SetupCommand<TResult>(mock, (commandMock, result) =>
+                commandMock.Setup(command => command.ExecuteNonQuery())
+                                                    .Returns(() => Convert.ToInt32(result())));
     }
 }
