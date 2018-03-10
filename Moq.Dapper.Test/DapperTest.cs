@@ -1,10 +1,10 @@
-﻿using System;
+﻿using Dapper;
+using NUnit.Framework;
+using NUnit.Framework.Constraints;
+using System;
 using System.Data;
 using System.Data.Common;
 using System.Linq;
-using Dapper;
-using NUnit.Framework;
-using NUnit.Framework.Constraints;
 
 namespace Moq.Dapper.Test
 {
@@ -149,11 +149,25 @@ namespace Moq.Dapper.Test
         {
             var connection = new Mock<IDbConnection>();
 
-            connection.SetupDapper(c => c.Execute(It.IsAny<string>(), It.IsAny<object>(), null, null, null));
+            connection.SetupDapper(c => c.Execute(It.IsAny<string>(), It.IsAny<object>(), null, null, null))
+                    .Returns(1);
 
-            connection.Object.Execute("Robert'); DROP TABLE Students;--");
+            var result = connection.Object.Execute("Robert'); DROP TABLE Students;--");
 
-            connection.Verify(c => c.Execute(It.IsAny<string>(), It.IsAny<object>(), null, null, null), Times.Once());
+            Assert.That(result, Is.EqualTo(1));
+        }
+
+        [Test]
+        public void ExecuteNonQueryAsync()
+        {
+            var connection = new Mock<DbConnection>();
+
+            connection.SetupDapperAsync(c => c.ExecuteAsync(It.IsAny<string>(), It.IsAny<object>(), null, null, null))
+                    .ReturnsAsync(1);
+
+            var result = connection.Object.ExecuteAsync("Robert'); DROP TABLE Students;--");
+
+            Assert.That(result, Is.EqualTo(1));
         }
 
         [Test]
