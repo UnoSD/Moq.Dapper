@@ -145,6 +145,18 @@ namespace Moq.Dapper.Test
         }
 
         [Test]
+        public void ExecuteNonQuery()
+        {
+            var connection = new Mock<IDbConnection>();
+
+            connection.SetupDapper(c => c.Execute(It.IsAny<string>(), It.IsAny<object>(), null, null, null));
+
+            connection.Object.Execute("Robert'); DROP TABLE Students;--");
+
+            connection.Verify(c => c.Execute(It.IsAny<string>(), It.IsAny<object>(), null, null, null), Times.Once());
+        }
+
+        [Test]
         public void NonDapperMethodException()
         {
             var connection = new Mock<IDbConnection>();
