@@ -1,4 +1,5 @@
-﻿using Dapper;
+﻿using System.Threading.Tasks;
+using Dapper;
 using NUnit.Framework;
 using NUnit.Framework.Constraints;
 using System;
@@ -27,7 +28,7 @@ namespace Moq.Dapper.Test
         }
 
         [Test]
-        public void QueryAsyncGeneric()
+        public async Task QueryAsyncGeneric()
         {
             var connection = new Mock<DbConnection>();
 
@@ -36,7 +37,7 @@ namespace Moq.Dapper.Test
             connection.SetupDapperAsync(c => c.QueryAsync<int>(It.IsAny<string>(), null, null, null, null))
                       .ReturnsAsync(expected);
 
-            var actual = connection.Object.QueryAsync<int>("").GetAwaiter().GetResult().ToList();
+            var actual = (await connection.Object.QueryAsync<int>("")).ToList();
             
             Assert.That(actual.Count, Is.EqualTo(expected.Length));
             Assert.That(actual, Is.EquivalentTo(expected));
@@ -158,16 +159,18 @@ namespace Moq.Dapper.Test
         }
 
         [Test]
-        public void ExecuteNonQueryAsync()
+        public async Task ExecuteNonQueryAsync()
         {
             var connection = new Mock<DbConnection>();
 
-            connection.SetupDapperAsync(c => c.ExecuteAsync(It.IsAny<string>(), It.IsAny<object>(), null, null, null))
+            connection.SetupDapperAsync(c => c.ExecuteAsync("Robert'); DROP TABLE Students;--", null, null, null, null))
                     .ReturnsAsync(1);
 
-            var result = connection.Object.ExecuteAsync("Robert'); DROP TABLE Students;--");
+            var result = await connection.Object.ExecuteAsync("Robert'); DROP TABLE Students;--");
 
             Assert.That(result, Is.EqualTo(1));
+
+            connection.VerifyAll();
         }
 
         [Test]

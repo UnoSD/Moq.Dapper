@@ -39,6 +39,8 @@ namespace Moq.Dapper
             {
                 case nameof(SqlMapper.QueryAsync):
                     return SetupQueryAsync<TResult>(mock);
+                case nameof(SqlMapper.ExecuteAsync):
+                    return SetupExecuteAsync<TResult>(mock);
                 default:
                     throw new NotSupportedException();
             }
@@ -50,6 +52,12 @@ namespace Moq.Dapper
                 commandMock.Protected()
                            .Setup<Task<DbDataReader>>("ExecuteDbDataReaderAsync", ItExpr.IsAny<CommandBehavior>(), ItExpr.IsAny<CancellationToken>())
                            .ReturnsAsync(() => DbDataReader(result));
+            });
+
+        private static ISetup<DbConnection, Task<TResult>> SetupExecuteAsync<TResult>(Mock<DbConnection> mock) =>
+            SetupNonQueryCommandAsync<TResult>(mock, (commandMock, result) =>
+            {
+                commandMock.Setup(x => x.ExecuteNonQueryAsync(It.IsAny<CancellationToken>())).ReturnsAsync(result);
             });
 
         private static DbDataReader DbDataReader<TResult>(Func<TResult> result)
@@ -128,6 +136,26 @@ namespace Moq.Dapper
                 .Returns(commandMock.Object);
 
             return setupMock.Object;
+        }
+
+        private static ISetup<DbConnection, Task<TResult>> SetupNonQueryCommandAsync<TResult>(Mock<DbConnection> mock, Action<Mock<DbCommand>, Func<int>> mockResult)
+        {
+            var setupMock = new Mock<ISetup<DbConnection, Task<int>>>();
+
+            var result = default(int);
+
+            setupMock.Setup(setup => setup.Returns(It.IsAny<Func<Task<int>>>()))
+                     .Callback<Func<Task<int>>>(r => result = r().Result);
+
+            var commandMock = new Mock<DbCommand>();
+
+            mockResult(commandMock, () => result);
+
+            mock.As<IDbConnection>()
+                .Setup(m => m.CreateCommand())
+                .Returns(commandMock.Object);
+
+            return (ISetup<DbConnection, Task<TResult>>)setupMock.Object;
         }
     }
 }
