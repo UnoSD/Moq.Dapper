@@ -19,7 +19,7 @@ namespace Moq.Dapper
             var call = expression.Body as MethodCallExpression;
 
             if (call?.Method.DeclaringType != typeof(SqlMapper))
-                throw new ArgumentException("Not a Dapper mehtod.");
+                throw new ArgumentException("Not a Dapper method.");
 
             switch (call.Method.Name)
             {
@@ -33,7 +33,7 @@ namespace Moq.Dapper
             var call = expression.Body as MethodCallExpression;
 
             if (call?.Method.DeclaringType != typeof(SqlMapper))
-                throw new ArgumentException("Not a Dapper mehtod.");
+                throw new ArgumentException("Not a Dapper method.");
 
             switch (call.Method.Name)
             {
@@ -52,7 +52,7 @@ namespace Moq.Dapper
                            .ReturnsAsync(() => DbDataReader(result));
             });
 
-        private static DbDataReader DbDataReader<TResult>(Func<TResult> result)
+        internal static DbDataReader DbDataReader<TResult>(Func<TResult> result)
         {
             // TResult must be IEnumerable if we're invoking SqlMapper.Query.
             var enumerable = (IEnumerable) result();
