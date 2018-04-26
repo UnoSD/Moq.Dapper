@@ -50,7 +50,7 @@ namespace Moq.Dapper.Test
             var expected = new[] { 7, 77, 777 };
 
             connection.SetupDapperAsync(c => c.QueryAsync<int>(It.IsAny<string>(), null, null, null, null))
-                .ReturnsAsync(expected);
+                      .ReturnsAsync(expected);
 
             var actual = connection.Object.QueryAsync<int>("").GetAwaiter().GetResult().ToList();
 

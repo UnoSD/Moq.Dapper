@@ -54,8 +54,8 @@ namespace Moq.Dapper
             SetupCommandAsync<TResult>(mock, (commandMock, result) =>
             {
                 commandMock.Protected()
-                    .Setup<Task<DbDataReader>>("ExecuteDbDataReaderAsync", ItExpr.IsAny<CommandBehavior>(), ItExpr.IsAny<CancellationToken>())
-                    .ReturnsAsync(() => DbConnectionMockExtensions.DbDataReader(result));
+                           .Setup<Task<DbDataReader>>("ExecuteDbDataReaderAsync", ItExpr.IsAny<CommandBehavior>(), ItExpr.IsAny<CancellationToken>())
+                           .ReturnsAsync(() => DbConnectionMockExtensions.DbDataReader(result));
             });
 
         private static ISetup<IDbConnection, Task<TResult>> SetupCommandAsync<TResult>(Mock<IDbConnection> mock, Action<Mock<DbCommand>, Func<TResult>> mockResult)
@@ -65,21 +65,24 @@ namespace Moq.Dapper
             var result = default(TResult);
 
             setupMock.Setup(setup => setup.Returns(It.IsAny<Func<Task<TResult>>>()))
-                .Callback<Func<Task<TResult>>>(r => result = r().Result);
+                     .Callback<Func<Task<TResult>>>(r => result = r().Result);
 
             var commandMock = new Mock<DbCommand>();
 
             commandMock.Protected()
-                .SetupGet<DbParameterCollection>("DbParameterCollection")
-                .Returns(new Mock<DbParameterCollection>().Object);
+                       .SetupGet<DbParameterCollection>("DbParameterCollection")
+                       .Returns(new Mock<DbParameterCollection>().Object);
 
             commandMock.Protected()
-                .Setup<DbParameter>("CreateDbParameter")
-                .Returns(new Mock<DbParameter>().Object);
+                       .Setup<DbParameter>("CreateDbParameter")
+                       .Returns(new Mock<DbParameter>().Object);
 
             mockResult(commandMock, () => result);
 
-            mock.As<IDbConnection>().SetupGet(x => x.State).Returns(ConnectionState.Open);
+            mock.As<IDbConnection>()
+                .SetupGet(x => x.State)
+                .Returns(ConnectionState.Open);
+
             mock.As<IDbConnection>()
                 .Setup(m => m.CreateCommand())
                 .Returns(commandMock.Object);
