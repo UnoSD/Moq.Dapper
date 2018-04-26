@@ -34,7 +34,7 @@ namespace Moq.Dapper
             }
         }
 
-        public static ISetup<IDbConnection, Task<TResult>> SetupDapperAsync<TResult>(this Mock<IDbConnection> mock, Expression<Func<DbConnection, Task<TResult>>> expression)
+        public static ISetup<IDbConnection, Task<TResult>> SetupDapperAsync<TResult>(this Mock<IDbConnection> mock, Expression<Func<IDbConnection, Task<TResult>>> expression)
         {
             var call = expression.Body as MethodCallExpression;
 
