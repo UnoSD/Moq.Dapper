@@ -15,7 +15,7 @@ namespace Moq.Dapper
             var call = expression.Body as MethodCallExpression;
 
             if (call?.Method.DeclaringType != typeof(SqlMapper))
-                throw new ArgumentException("Not a Dapper mehtod.");
+                throw new ArgumentException("Not a Dapper method.");
 
             switch (call.Method.Name)
             {
