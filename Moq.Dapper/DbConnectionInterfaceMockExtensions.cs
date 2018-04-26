@@ -51,44 +51,12 @@ namespace Moq.Dapper
         }
 
         private static ISetup<IDbConnection, Task<TResult>> SetupQueryAsync<TResult>(Mock<IDbConnection> mock) =>
-            SetupCommandAsync<TResult>(mock, (commandMock, result) =>
+            DbCommandSetup.SetupCommandAsync<TResult, IDbConnection>(mock, (commandMock, result) =>
             {
                 commandMock.Protected()
                            .Setup<Task<DbDataReader>>("ExecuteDbDataReaderAsync", ItExpr.IsAny<CommandBehavior>(), ItExpr.IsAny<CancellationToken>())
                            .ReturnsAsync(() => DbDataReaderFactory.DbDataReader(result));
             });
-
-        private static ISetup<IDbConnection, Task<TResult>> SetupCommandAsync<TResult>(Mock<IDbConnection> mock, Action<Mock<DbCommand>, Func<TResult>> mockResult)
-        {
-            var setupMock = new Mock<ISetup<IDbConnection, Task<TResult>>>();
-
-            var result = default(TResult);
-
-            setupMock.Setup(setup => setup.Returns(It.IsAny<Func<Task<TResult>>>()))
-                     .Callback<Func<Task<TResult>>>(r => result = r().Result);
-
-            var commandMock = new Mock<DbCommand>();
-
-            commandMock.Protected()
-                       .SetupGet<DbParameterCollection>("DbParameterCollection")
-                       .Returns(new Mock<DbParameterCollection>().Object);
-
-            commandMock.Protected()
-                       .Setup<DbParameter>("CreateDbParameter")
-                       .Returns(new Mock<DbParameter>().Object);
-
-            mockResult(commandMock, () => result);
-
-            mock.As<IDbConnection>()
-                .SetupGet(x => x.State)
-                .Returns(ConnectionState.Open);
-
-            mock.As<IDbConnection>()
-                .Setup(m => m.CreateCommand())
-                .Returns(commandMock.Object);
-
-            return setupMock.Object;
-        }
 
         private static ISetup<IDbConnection, TResult> SetupQuery<TResult>(Mock<IDbConnection> mock) =>
             SetupCommand<TResult>(mock, (commandMock, getResult) =>
