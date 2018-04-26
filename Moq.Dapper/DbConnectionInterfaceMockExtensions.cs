@@ -55,7 +55,7 @@ namespace Moq.Dapper
             {
                 commandMock.Protected()
                            .Setup<Task<DbDataReader>>("ExecuteDbDataReaderAsync", ItExpr.IsAny<CommandBehavior>(), ItExpr.IsAny<CancellationToken>())
-                           .ReturnsAsync(() => DbConnectionMockExtensions.DbDataReader(result));
+                           .ReturnsAsync(() => DbDataReaderFactory.DbDataReader(result));
             });
 
         private static ISetup<IDbConnection, Task<TResult>> SetupCommandAsync<TResult>(Mock<IDbConnection> mock, Action<Mock<DbCommand>, Func<TResult>> mockResult)
