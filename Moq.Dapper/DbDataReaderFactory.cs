@@ -36,7 +36,8 @@ namespace Moq.Dapper
                                        info.PropertyType == typeof(decimal) ||
                                        info.PropertyType == typeof(Guid) ||
                                        info.PropertyType == typeof(string) ||
-                                       info.PropertyType == typeof(TimeSpan)))
+                                       info.PropertyType == typeof(TimeSpan) ||
+                                       info.PropertyType == typeof(byte[])))
                         .ToList();
 
                 var columns = properties.Select(property => new DataColumn(property.Name, property.PropertyType)).ToArray();
