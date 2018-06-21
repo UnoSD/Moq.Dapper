@@ -146,27 +146,27 @@ namespace Moq.Dapper.Test
         }
 
         [Test]
-        public void ExecuteNonQuery()
+        public void Execute()
         {
             var connection = new Mock<IDbConnection>();
 
-            connection.SetupDapper(c => c.Execute(It.IsAny<string>(), It.IsAny<object>(), null, null, null))
-                    .Returns(1);
+            connection.SetupDapper(c => c.Execute(It.IsAny<string>(), null, null, null, null))
+                      .Returns(1);
 
-            var result = connection.Object.Execute("Robert'); DROP TABLE Students;--");
+            var result = connection.Object.Execute("");
 
             Assert.That(result, Is.EqualTo(1));
         }
 
         [Test]
-        public async Task ExecuteNonQueryAsync()
+        public async Task ExecuteAsync()
         {
             var connection = new Mock<DbConnection>();
 
-            connection.SetupDapperAsync(c => c.ExecuteAsync("Robert'); DROP TABLE Students;--", null, null, null, null))
-                    .ReturnsAsync(1);
+            connection.SetupDapperAsync(c => c.ExecuteAsync("", null, null, null, null))
+                      .ReturnsAsync(1);
 
-            var result = await connection.Object.ExecuteAsync("Robert'); DROP TABLE Students;--");
+            var result = await connection.Object.ExecuteAsync("");
 
             Assert.That(result, Is.EqualTo(1));
 
