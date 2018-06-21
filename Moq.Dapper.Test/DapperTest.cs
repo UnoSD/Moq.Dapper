@@ -44,6 +44,22 @@ namespace Moq.Dapper.Test
         }
 
         [Test]
+        public void QueryAsyncGenericUsingDbConnectionInterface()
+        {
+            var connection = new Mock<IDbConnection>();
+
+            var expected = new[] { 7, 77, 777 };
+
+            connection.SetupDapperAsync(c => c.QueryAsync<int>(It.IsAny<string>(), null, null, null, null))
+                      .ReturnsAsync(expected);
+
+            var actual = connection.Object.QueryAsync<int>("").GetAwaiter().GetResult().ToList();
+
+            Assert.That(actual.Count, Is.EqualTo(expected.Length));
+            Assert.That(actual, Is.EquivalentTo(expected));
+        }
+
+        [Test]
         public void QueryGeneric()
         {
             var connection = new Mock<IDbConnection>();
