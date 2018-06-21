@@ -27,19 +27,33 @@ namespace Moq.Dapper
             }
             else
             {
+                bool IsNullable(Type t) =>
+                    t.IsGenericType &&
+                    t.GetGenericTypeDefinition() == typeof(Nullable<>);
+
+                Type GetDataColumnType(Type source) =>
+                    IsNullable(source) ?
+                        Nullable.GetUnderlyingType(source) :
+                        source;
+
+                bool IsMatchingType(Type t) =>
+                    t.IsPrimitive ||
+                    t == typeof(DateTime) ||
+                    t == typeof(DateTimeOffset) ||
+                    t == typeof(decimal) ||
+                    t == typeof(Guid) ||
+                    t == typeof(string) ||
+                    t == typeof(TimeSpan);
+
                 var properties =
                     type.GetProperties()
                         .Where(info => info.CanRead &&
-                                      (info.PropertyType.IsPrimitive ||
-                                       info.PropertyType == typeof(DateTime) ||
-                                       info.PropertyType == typeof(DateTimeOffset) ||
-                                       info.PropertyType == typeof(decimal) ||
-                                       info.PropertyType == typeof(Guid) ||
-                                       info.PropertyType == typeof(string) ||
-                                       info.PropertyType == typeof(TimeSpan)))
+                                       IsMatchingType(info.PropertyType) ||
+                                       IsNullable(info.PropertyType) &&
+                                       IsMatchingType(Nullable.GetUnderlyingType(info.PropertyType)))
                         .ToList();
 
-                var columns = properties.Select(property => new DataColumn(property.Name, property.PropertyType)).ToArray();
+                var columns = properties.Select(property => new DataColumn(property.Name, GetDataColumnType(property.PropertyType))).ToArray();
 
                 dataTable.Columns.AddRange(columns);
 
