@@ -1,10 +1,10 @@
-﻿using Dapper;
-using Moq.Language.Flow;
-using System;
+﻿using System;
 using System.Collections;
 using System.Data;
 using System.Linq;
 using System.Linq.Expressions;
+using Dapper;
+using Moq.Language.Flow;
 
 namespace Moq.Dapper
 {
