@@ -43,7 +43,8 @@ namespace Moq.Dapper
                     t == typeof(decimal) ||
                     t == typeof(Guid) ||
                     t == typeof(string) ||
-                    t == typeof(TimeSpan);
+                    t == typeof(TimeSpan) ||
+                    t == typeof(byte[]);
 
                 var properties =
                     type.GetProperties()
