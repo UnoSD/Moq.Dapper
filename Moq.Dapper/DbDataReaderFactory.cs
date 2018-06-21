@@ -53,8 +53,7 @@ namespace Moq.Dapper
                                        IsMatchingType(Nullable.GetUnderlyingType(info.PropertyType)))
                         .ToList();
 
-                var columns = properties.Select(property => new DataColumn(property.Name, GetDataColumnType(property.PropertyType)))
-                                        .ToArray();
+                var columns = properties.Select(property => new DataColumn(property.Name, GetDataColumnType(property.PropertyType))).ToArray();
 
                 dataTable.Columns.AddRange(columns);
 
