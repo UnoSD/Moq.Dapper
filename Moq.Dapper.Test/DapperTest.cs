@@ -28,7 +28,7 @@ namespace Moq.Dapper.Test
         }
 
         [Test]
-        public async Task QueryAsyncGeneric()
+        public void QueryAsyncGeneric()
         {
             var connection = new Mock<DbConnection>();
 
@@ -37,7 +37,7 @@ namespace Moq.Dapper.Test
             connection.SetupDapperAsync(c => c.QueryAsync<int>(It.IsAny<string>(), null, null, null, null))
                       .ReturnsAsync(expected);
 
-            var actual = (await connection.Object.QueryAsync<int>("")).ToList();
+            var actual = connection.Object.QueryAsync<int>("").GetAwaiter().GetResult().ToList();
             
             Assert.That(actual.Count, Is.EqualTo(expected.Length));
             Assert.That(actual, Is.EquivalentTo(expected));
@@ -169,8 +169,6 @@ namespace Moq.Dapper.Test
             var result = await connection.Object.ExecuteAsync("");
 
             Assert.That(result, Is.EqualTo(1));
-
-            connection.VerifyAll();
         }
 
         [Test]
