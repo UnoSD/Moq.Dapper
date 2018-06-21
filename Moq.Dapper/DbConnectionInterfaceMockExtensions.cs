@@ -1,10 +1,14 @@
 ﻿using System;
 using System.Collections;
 using System.Data;
+using System.Data.Common;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Threading;
+using System.Threading.Tasks;
 using Dapper;
 using Moq.Language.Flow;
+using Moq.Protected;
 
 namespace Moq.Dapper
 {
@@ -15,7 +19,7 @@ namespace Moq.Dapper
             var call = expression.Body as MethodCallExpression;
 
             if (call?.Method.DeclaringType != typeof(SqlMapper))
-                throw new ArgumentException("Not a Dapper mehtod.");
+                throw new ArgumentException("Not a Dapper method.");
 
             switch (call.Method.Name)
             {
@@ -32,6 +36,30 @@ namespace Moq.Dapper
             }
         }
 
+        public static ISetup<IDbConnection, Task<TResult>> SetupDapperAsync<TResult>(this Mock<IDbConnection> mock, Expression<Func<IDbConnection, Task<TResult>>> expression)
+        {
+            var call = expression.Body as MethodCallExpression;
+
+            if (call?.Method.DeclaringType != typeof(SqlMapper))
+                throw new ArgumentException("Not a Dapper method.");
+
+            switch (call.Method.Name)
+            {
+                case nameof(SqlMapper.QueryAsync):
+                    return SetupQueryAsync<TResult>(mock);
+                default:
+                    throw new NotSupportedException();
+            }
+        }
+
+        private static ISetup<IDbConnection, Task<TResult>> SetupQueryAsync<TResult>(Mock<IDbConnection> mock) =>
+            DbCommandSetup.SetupCommandAsync<TResult, IDbConnection>(mock, (commandMock, result) =>
+            {
+                commandMock.Protected()
+                           .Setup<Task<DbDataReader>>("ExecuteDbDataReaderAsync", ItExpr.IsAny<CommandBehavior>(), ItExpr.IsAny<CancellationToken>())
+                           .ReturnsAsync(() => DbDataReaderFactory.DbDataReader(result));
+            });
+
         private static ISetup<IDbConnection, TResult> SetupQuery<TResult>(Mock<IDbConnection> mock) =>
             SetupCommand<TResult>(mock, (commandMock, getResult) =>
             {
@@ -45,7 +73,7 @@ namespace Moq.Dapper
                                var dataTable = new DataTable();
 
                                // Assuming SqlMapper.Query returns always generic IEnumerable<TResult>.
-                               var type = results == null ?
+                               var type = results == null ? 
                                           typeof(TResult) :
                                           typeof(TResult).GenericTypeArguments.First();
 
@@ -74,16 +102,17 @@ namespace Moq.Dapper
                                        t == typeof(decimal) ||
                                        t == typeof(Guid) ||
                                        t == typeof(string) ||
-                                       t == typeof(TimeSpan);
-
-                                   var properties =
+                                       t == typeof(TimeSpan) ||
+                                       t == typeof(byte[]);
+                                   
+                                   var properties = 
                                        type.GetProperties()
                                            .Where(info => info.CanRead &&
                                                           IsMatchingType(info.PropertyType) ||
                                                           IsNullable(info.PropertyType) &&
                                                           IsMatchingType(Nullable.GetUnderlyingType(info.PropertyType)))
                                            .ToList();
-
+                                   
                                    var columns = properties.Select(property => new DataColumn(property.Name, GetDataColumnType(property.PropertyType)))
                                                            .ToArray();
 
@@ -91,11 +120,11 @@ namespace Moq.Dapper
 
                                    var valuesFactory = properties.Select(info => (Func<object, object>)info.GetValue)
                                                                  .ToArray();
-
+                                   
                                    foreach (var element in enumerable)
                                        dataTable.Rows.Add(valuesFactory.Select(getValue => getValue(element)).ToArray());
                                }
-
+                               
                                return new DataTableReader(dataTable);
                            });
             });
