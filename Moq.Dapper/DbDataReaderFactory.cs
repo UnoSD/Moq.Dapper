@@ -11,7 +11,7 @@ namespace Moq.Dapper
         internal static DbDataReader DbDataReader<TResult>(Func<TResult> result)
         {
             // TResult must be IEnumerable if we're invoking SqlMapper.Query.
-            var enumerable = (IEnumerable) result();
+            var enumerable = (IEnumerable)result();
 
             var dataTable = new DataTable();
 
@@ -53,13 +53,12 @@ namespace Moq.Dapper
                                        IsMatchingType(Nullable.GetUnderlyingType(info.PropertyType)))
                         .ToList();
 
-                var columns = 
-                    properties.Select(property => new DataColumn(property.Name, GetDataColumnType(property.PropertyType)))
-                              .ToArray();
+                var columns = properties.Select(property => new DataColumn(property.Name, GetDataColumnType(property.PropertyType)))
+                                        .ToArray();
 
                 dataTable.Columns.AddRange(columns);
 
-                var valuesFactory = properties.Select(info => (Func<object, object>) info.GetValue).ToArray();
+                var valuesFactory = properties.Select(info => (Func<object, object>)info.GetValue).ToArray();
 
                 foreach (var element in enumerable)
                     dataTable.Rows.Add(valuesFactory.Select(getValue => getValue(element)).ToArray());
