@@ -139,10 +139,8 @@ namespace Moq.Dapper
                      .Callback<TResult>(r => result = r);
 
             var commandMock = new Mock<IDbCommand>();
-
             commandMock.SetupGet(a => a.Parameters)
                        .Returns(new Mock<IDataParameterCollection>().Object);
-
             commandMock.Setup(a => a.CreateParameter())
                        .Returns(new Mock<IDbDataParameter>().Object);
 
