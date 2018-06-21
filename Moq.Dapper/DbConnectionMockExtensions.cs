@@ -90,15 +90,16 @@ namespace Moq.Dapper
                     t == typeof(TimeSpan);
 
                 var properties =
-                    type.GetProperties().Where(info => info.CanRead &&
-                                                       IsMatchingType(info.PropertyType) ||
-                                                       IsNullable(info.PropertyType) &&
-                                                       IsMatchingType(Nullable.GetUnderlyingType(info.PropertyType)))
+                    type.GetProperties()
+                        .Where(info => info.CanRead &&
+                                       IsMatchingType(info.PropertyType) ||
+                                       IsNullable(info.PropertyType) &&
+                                       IsMatchingType(Nullable.GetUnderlyingType(info.PropertyType)))
                         .ToList();
 
-                var columns = properties.Select(property =>
-                        new DataColumn(property.Name, GetDataColumnType(property.PropertyType)))
-                    .ToArray();
+                var columns = 
+                    properties.Select(property => new DataColumn(property.Name, GetDataColumnType(property.PropertyType)))
+                              .ToArray();
 
                 dataTable.Columns.AddRange(columns);
 

@@ -115,7 +115,7 @@ namespace Moq.Dapper.Test
             }
         }
 
-         [Test]
+        [Test]
         public void QueryAsyncGenericComplexType()
         {
             var connection = new Mock<DbConnection>();
@@ -151,13 +151,12 @@ namespace Moq.Dapper.Test
                 }
             };
 
-            connection.SetupDapperAsync(c => c.QueryAsync<ComplexType>(It.IsAny<string>(), null, null, true, null, false, null, null, null))
+            connection.SetupDapperAsync(c => c.QueryAsync<ComplexType>(It.IsAny<string>(), null, null, null, null))
                       .ReturnsAsync(expected);
 
             var actual = connection.Object
-                    .QueryAsync<ComplexType>("", null, null, true, null, false, null, null, null)
-                    .GetAwaiter().GetResult().ToList();
-
+                                   .QueryAsync<ComplexType>("", null, null, null, null)
+                                   .GetAwaiter().GetResult().ToList();
 
             Assert.That(actual.Count, Is.EqualTo(expected.Length));
 
