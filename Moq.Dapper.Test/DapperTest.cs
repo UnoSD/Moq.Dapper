@@ -127,10 +127,7 @@ namespace Moq.Dapper.Test
                                                co.DateTimeProperty == complexObject.DateTimeProperty &&
                                                co.NullableIntegerProperty == complexObject.NullableIntegerProperty &&
                                                co.NullableDateTimeProperty == complexObject.NullableDateTimeProperty &&
-                                               (
-                                                co.ByteArrayPropery == null && complexObject.ByteArrayPropery == null ||
-                                                co.ByteArrayPropery.Equals(complexObject.ByteArrayPropery)
-                                               ));
+                                               co.ByteArrayPropery == complexObject.ByteArrayPropery);
 
                 Assert.That(match.Count, Is.EqualTo(1));
             }
