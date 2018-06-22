@@ -29,6 +29,8 @@ namespace Moq.Dapper
                     return SetupExecuteScalar<TResult>(mock);
                 case nameof(SqlMapper.Query):
                     return SetupQuery<TResult>(mock);
+                case nameof(SqlMapper.Execute):
+                    return SetupExecute<TResult>(mock);
                 default:
                     throw new NotSupportedException();
             }
@@ -140,7 +142,7 @@ namespace Moq.Dapper
             
             commandMock.SetupGet(a => a.Parameters)
                        .Returns(new Mock<IDataParameterCollection>().Object);
-            
+
             commandMock.Setup(a => a.CreateParameter())
                        .Returns(new Mock<IDbDataParameter>().Object);
 
@@ -156,5 +158,10 @@ namespace Moq.Dapper
             SetupCommand<TResult>(mock, (commandMock, result) =>
                 commandMock.Setup(command => command.ExecuteScalar())
                                                     .Returns(() => result()));
+
+        private static ISetup<IDbConnection, TResult> SetupExecute<TResult>(Mock<IDbConnection> mock) =>
+            SetupCommand<TResult>(mock, (commandMock, result) =>
+                commandMock.Setup(command => command.ExecuteNonQuery())
+                                                    .Returns(() => Convert.ToInt32(result())));
     }
 }

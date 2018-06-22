@@ -36,5 +36,19 @@ namespace Moq.Dapper.Test
 
             Assert.That(actual, Is.EqualTo(expected));
         }
+
+        [Test]
+        public void Execute()
+        {
+            var connection = new Mock<IDbConnection>();
+
+            connection.SetupDapper(c => c.Execute(It.IsAny<string>(), null, null, null, null))
+                      .Returns(1);
+
+            var result = connection.Object
+                                   .Execute("");
+
+            Assert.That(result, Is.EqualTo(1));
+        }
     }
 }
