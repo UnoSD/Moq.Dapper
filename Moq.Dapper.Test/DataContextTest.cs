@@ -23,7 +23,7 @@ namespace Moq.Dapper.Test
 
             var mock = new DataContextMock<TestDataContext>(connection);
 
-            var actual = mock.Object.Connection.ExecuteScalar<int>("", null, null, null);
+            var actual = mock.Object.Connection.ExecuteScalar<int>("");
 
             Assert.That(actual, Is.EqualTo(expected));
         }

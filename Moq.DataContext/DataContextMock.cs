@@ -1,5 +1,7 @@
 ﻿using System.Data.Common;
+using System.Linq;
 using System.Reflection;
+using Moq.Dapper.Test;
 using DataContextType = System.Data.Linq.DataContext;
 
 namespace Moq.DataContext
@@ -8,10 +10,7 @@ namespace Moq.DataContext
     {
         private readonly Mock<DbConnection> _connectionMock;
 
-        public DataContextMock(Mock<DbConnection> connectionMock)
-        {
-            _connectionMock = connectionMock;
-        }
+        public DataContextMock(Mock<DbConnection> connectionMock) => _connectionMock = connectionMock;
 
         public override T Object => CreateDataContextMock();
 
@@ -21,7 +20,9 @@ namespace Moq.DataContext
 
             var dataContext = new T();
 
-            var providerField = typeof(T).GetField("provider", BindingFlags.Instance | BindingFlags.NonPublic);
+            var providerField = typeof(T).AllBaseTypes()
+                                         .First(type => type == typeof(DataContextType))
+                                         .GetField("provider", BindingFlags.Instance | BindingFlags.NonPublic);
 
             providerField?.SetValue(dataContext, proxy.GetTransparentProxy());
 
