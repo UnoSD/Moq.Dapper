@@ -52,7 +52,7 @@ namespace Moq.Dapper
             }
         }
 
-        private static ISetup<IDbConnection, Task<TResult>> SetupQueryAsync<TResult>(Mock<IDbConnection> mock) =>
+        static ISetup<IDbConnection, Task<TResult>> SetupQueryAsync<TResult>(Mock<IDbConnection> mock) =>
             DbCommandSetup.SetupCommandAsync<TResult, IDbConnection>(mock, (commandMock, result) =>
             {
                 commandMock.Protected()
@@ -60,7 +60,7 @@ namespace Moq.Dapper
                            .ReturnsAsync(() => DbDataReaderFactory.DbDataReader(result));
             });
 
-        private static ISetup<IDbConnection, TResult> SetupQuery<TResult>(Mock<IDbConnection> mock) =>
+        static ISetup<IDbConnection, TResult> SetupQuery<TResult>(Mock<IDbConnection> mock) =>
             SetupCommand<TResult>(mock, (commandMock, getResult) =>
             {
                 commandMock.Setup(command => command.ExecuteReader(It.IsAny<CommandBehavior>()))
@@ -129,7 +129,7 @@ namespace Moq.Dapper
                            });
             });
 
-        private static ISetup<IDbConnection, TResult> SetupCommand<TResult>(Mock<IDbConnection> mock, Action<Mock<IDbCommand>, Func<TResult>> mockResult)
+        static ISetup<IDbConnection, TResult> SetupCommand<TResult>(Mock<IDbConnection> mock, Action<Mock<IDbCommand>, Func<TResult>> mockResult)
         {
             var setupMock = new Mock<ISetup<IDbConnection, TResult>>();
 
@@ -154,12 +154,12 @@ namespace Moq.Dapper
             return setupMock.Object;
         }
 
-        private static ISetup<IDbConnection, TResult> SetupExecuteScalar<TResult>(Mock<IDbConnection> mock) =>
+        static ISetup<IDbConnection, TResult> SetupExecuteScalar<TResult>(Mock<IDbConnection> mock) =>
             SetupCommand<TResult>(mock, (commandMock, result) =>
                 commandMock.Setup(command => command.ExecuteScalar())
                                                     .Returns(() => result()));
 
-        private static ISetup<IDbConnection, TResult> SetupExecute<TResult>(Mock<IDbConnection> mock) =>
+        static ISetup<IDbConnection, TResult> SetupExecute<TResult>(Mock<IDbConnection> mock) =>
             SetupCommand<TResult>(mock, (commandMock, result) =>
                 commandMock.Setup(command => command.ExecuteNonQuery())
                                                     .Returns(() => Convert.ToInt32(result())));

@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Moq.Dapper.Test
+namespace Moq.DataContext
 {
-    internal static class TypeExtensions
+    static class TypeExtensions
     {
         internal static IEnumerable<Type> AllBaseTypes(this Type type)
         {

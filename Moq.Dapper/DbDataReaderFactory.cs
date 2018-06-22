@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace Moq.Dapper
 {
-    internal static class DbDataReaderFactory
+    static class DbDataReaderFactory
     {
         internal static DbDataReader DbDataReader<TResult>(Func<TResult> result)
         {
