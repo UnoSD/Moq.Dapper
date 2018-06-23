@@ -72,10 +72,13 @@ namespace Moq.Dapper
         {
             var setupMock = new Mock<ISetup<IDbConnection, TResult>>();
 
-            var result = default(TResult);
+            Func<TResult> result = null;
+
+            setupMock.Setup(setup => setup.Returns(It.IsAny<Func<TResult>>()))
+                     .Callback<Func<TResult>>(r => result = r);
 
             setupMock.Setup(setup => setup.Returns(It.IsAny<TResult>()))
-                     .Callback<TResult>(r => result = r);
+                     .Callback<TResult>(r => result = () => r);
 
             var commandMock = new Mock<IDbCommand>();
 
@@ -85,7 +88,7 @@ namespace Moq.Dapper
             commandMock.Setup(a => a.CreateParameter())
                        .Returns(new Mock<IDbDataParameter>().Object);
 
-            mockResult(commandMock, () => result);
+            mockResult(commandMock, () => result());
 
             mock.Setup(connection => connection.CreateCommand())
                 .Returns(commandMock.Object);
