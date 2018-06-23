@@ -96,7 +96,7 @@ namespace Moq.Dapper
         static ISetup<IDbConnection, TResult> SetupExecuteScalar<TResult>(Mock<IDbConnection> mock) =>
             SetupCommand<TResult>(mock, (commandMock, result) =>
                 commandMock.Setup(command => command.ExecuteScalar())
-                                                    .Returns(() => result()));
+                           .Returns(() => result()));
 
         static ISetup<IDbConnection, int> SetupExecute(Mock<IDbConnection> mock) =>
             SetupCommand<int>(mock, (commandMock, result) =>
