@@ -41,21 +41,6 @@ namespace Moq.Dapper.Test
         }
 
         [Test]
-        public void QueryDeferred()
-        {
-            var connection = new Mock<IDbConnection>();
-
-            int[] expected = { 15 };
-
-            connection.SetupDapper(x => x.Query<int>(It.IsAny<string>(), null, null, true, null, null))
-                      .Returns(() => expected);
-
-            var actual = connection.Object.Query<int>("");
-
-            Assert.That(actual, Is.EquivalentTo(expected));
-        }
-
-        [Test]
         public void QueryGenericComplexType()
         {
             var connection = new Mock<IDbConnection>();
