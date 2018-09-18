@@ -3,10 +3,6 @@ Moq extensions for Dapper methods.
 
 NuGet: https://www.nuget.org/packages/Moq.Dapper/
 
-Why Fork? - The point of this fork is to add the ability to create Mocks that provide a strategy for mapping SQL statements to results. The idea is by providing a strategy, we can skip writing the wiring code and focus on providing just the mapping of tuples of (query,parameters) to results.
-
-A specific hopeful example of what will be possible is that we ask for a default Mock with a resource handler. By taking the hash of the SQL, plus a hash of the parameter values, we find the results to return, and handle returning it as the correct type.
-
 # Example usage
 
 Mocking a call to `Query` with a simple type:
