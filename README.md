@@ -2,6 +2,7 @@
 Moq extensions for Dapper methods.
 
 [![NuGet Version and Downloads count](https://buildstats.info/nuget/Moq.Dapper)](https://www.nuget.org/packages/Moq.Dapper)
+[![](https://dev.azure.com/unosd/Moq.Dapper/_apis/build/status/Publish%20to%20NuGet)]()
 
 # Example usage
 
