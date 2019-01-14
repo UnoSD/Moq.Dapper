@@ -54,7 +54,15 @@ namespace Moq.Dapper
                      .Callback<Func<Task<int>>>(r => result = r().Result);
 
             var commandMock = new Mock<DbCommand>();
+            
+            commandMock.Protected()
+                       .SetupGet<DbParameterCollection>("DbParameterCollection")
+                       .Returns(new Mock<DbParameterCollection>().Object);
 
+            commandMock.Protected()
+                       .Setup<DbParameter>("CreateDbParameter")
+                       .Returns(new Mock<DbParameter>().Object);
+            
             mockResult(commandMock, () => result);
 
             mock.As<IDbConnection>()
