@@ -1,7 +1,7 @@
 # Moq.Dapper
 Moq extensions for Dapper methods.
 
-NuGet: https://www.nuget.org/packages/Moq.Dapper/
+[![NuGet Version and Downloads count](https://buildstats.info/nuget/Moq.Dapper)](https://www.nuget.org/packages/Moq.Dapper)
 
 # Example usage
 
