@@ -3,6 +3,7 @@ using System.Data;
 using System.Data.Common;
 using System.Linq;
 using Dapper;
+using Moq.Dapper.Test.Shared;
 using NUnit.Framework;
 
 namespace Moq.Dapper.Test
@@ -104,17 +105,6 @@ namespace Moq.Dapper.Test
 
                 Assert.That(match.Count, Is.EqualTo(1));
             }
-        }
-
-        public class ComplexType
-        {
-            public int IntegerProperty { get; set; }
-            public string StringProperty { get; set; }
-            public Guid GuidProperty { get; set; }
-            public DateTime DateTimeProperty { get; set; }
-            public DateTime? NullableDateTimeProperty { get; set; }
-            public int? NullableIntegerProperty { get; set; }
-            public byte[] ByteArrayPropery { get; set; }
         }
     }
 }

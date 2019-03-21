@@ -12,7 +12,10 @@ namespace Moq.Dapper
 {
     public static class DbConnectionInterfaceMockExtensions
     {
-        public static ISetup<IDbConnection, TResult> SetupDapper<TResult>(this Mock<IDbConnection> mock, Expression<Func<IDbConnection, TResult>> expression)
+        #region Synchronous
+
+        public static ISetup<TConnection, TResult> SetupDapper<TResult, TConnection>(this Mock<TConnection> mock, Expression<Func<TConnection, TResult>> expression)
+            where TConnection : class, IDbConnection
         {
             var call = expression.Body as MethodCallExpression;
 
@@ -22,21 +25,63 @@ namespace Moq.Dapper
             switch (call.Method.Name)
             {
                 case nameof(SqlMapper.Execute):
-                    return (ISetup<IDbConnection, TResult>)SetupExecute(mock);
-
+                    return (ISetup<TConnection, TResult>)SetupExecute(mock);
                 case nameof(SqlMapper.ExecuteScalar):
-                    return SetupExecuteScalar<TResult>(mock);
-
+                    return SetupExecuteScalar<TResult, TConnection>(mock);
                 case nameof(SqlMapper.Query):
+                case nameof(SqlMapper.QueryFirst):
                 case nameof(SqlMapper.QueryFirstOrDefault):
-                    return SetupQuery<TResult>(mock);
-
+                case nameof(SqlMapper.QuerySingle):
+                case nameof(SqlMapper.QuerySingleOrDefault):
+                    return SetupQuery<TResult, TConnection>(mock);
                 default:
                     throw new NotSupportedException();
             }
         }
 
-        public static ISetup<IDbConnection, Task<TResult>> SetupDapperAsync<TResult>(this Mock<IDbConnection> mock, Expression<Func<IDbConnection, Task<TResult>>> expression)
+        private static ISetup<TConnection, TResult> SetupQuery<TResult, TConnection>(Mock<TConnection> mock)
+            where TConnection : class, IDbConnection
+        {
+            return DbCommandSetup.SetupCommand<TResult, TConnection>(
+                mock,
+                (commandMock, result) =>
+                {
+                    commandMock
+                        .Setup(command => command.ExecuteReader(It.IsAny<CommandBehavior>()))
+                        .Returns(() => DbDataReaderProvider.DbDataReader(result));
+                });
+        }
+
+        private static ISetup<TConnection, TResult> SetupExecuteScalar<TResult, TConnection>(Mock<TConnection> mock)
+            where TConnection : class, IDbConnection
+        {
+            return DbCommandSetup.SetupCommand<TResult, TConnection>(
+                mock,
+                (commandMock, result) =>
+                {
+                    commandMock
+                        .Setup(command => command.ExecuteScalar())
+                        .Returns(() => result());
+                });
+        }
+
+        private static ISetup<TConnection, int> SetupExecute<TConnection>(Mock<TConnection> mock)
+            where TConnection : class, IDbConnection
+        {
+            return DbCommandSetup.SetupCommand<int, TConnection>(
+                mock,
+                (commandMock, result) =>
+                {
+                    commandMock
+                        .Setup(command => command.ExecuteNonQuery())
+                        .Returns(() => result());
+                });
+        }
+        #endregion
+
+        #region Asynchronous
+        public static ISetup<TConnection, Task<TResult>> SetupDapperAsync<TResult, TConnection>(this Mock<TConnection> mock, Expression<Func<TConnection, Task<TResult>>> expression)
+            where TConnection : class, IDbConnection
         {
             var call = expression.Body as MethodCallExpression;
 
@@ -46,76 +91,63 @@ namespace Moq.Dapper
             switch (call.Method.Name)
             {
                 case nameof(SqlMapper.QueryAsync):
-                    return SetupQueryAsync<TResult>(mock);
+                case nameof(SqlMapper.QueryFirstAsync):
+                case nameof(SqlMapper.QueryFirstOrDefaultAsync):
+                case nameof(SqlMapper.QuerySingleAsync):
+                case nameof(SqlMapper.QuerySingleOrDefaultAsync):
+                    return SetupQueryAsync<TResult, TConnection>(mock);
+                case nameof(SqlMapper.ExecuteScalarAsync):
+                    return SetupExecuteScalarAsync<TResult, TConnection>(mock);
+                case nameof(SqlMapper.ExecuteAsync) when typeof(TResult) == typeof(int):
+                    return (ISetup<TConnection, Task<TResult>>)SetupExecuteAsync(mock);
                 default:
                     throw new NotSupportedException();
             }
         }
 
-        static ISetup<IDbConnection, Task<TResult>> SetupQueryAsync<TResult>(Mock<IDbConnection> mock) =>
-            DbCommandSetup.SetupCommandAsync<TResult, IDbConnection>(mock, (commandMock, result) =>
-            {
-                commandMock.Protected()
-                           .Setup<Task<DbDataReader>>("ExecuteDbDataReaderAsync", ItExpr.IsAny<CommandBehavior>(), ItExpr.IsAny<CancellationToken>())
-                           .ReturnsAsync(() => DbDataReaderFactory.DbDataReader(result));
-            });
-
-        static ISetup<IDbConnection, TResult> SetupQuery<TResult>(Mock<IDbConnection> mock) =>
-            SetupCommand<TResult>(mock, (commandMock, getResult) =>
-            {
-                commandMock.Setup(command => command.ExecuteReader(It.IsAny<CommandBehavior>()))
-                           .Returns(() => getResult().ToDataTable(typeof(TResult))
-                                                     .ToDataTableReader());
-            });
-
-        static ISetup<IDbConnection, TResult> SetupCommand<TResult>(Mock<IDbConnection> mock, Action<Mock<IDbCommand>, Func<TResult>> mockResult)
+        private static ISetup<TConnection, Task<int>> SetupExecuteAsync<TConnection>(Mock<TConnection> mock)
+            where TConnection : class, IDbConnection
         {
-            var setupMock = new Mock<ISetup<IDbConnection, TResult>>();
-            var returnsMock = new Mock<IReturnsResult<IDbConnection>>();
-
-            Func<TResult> getResult = null;
-            Action callback = null;
-
-            setupMock.Setup(setup => setup.Returns(It.IsAny<Func<TResult>>()))
-                     .Returns(returnsMock.Object)
-                     .Callback<Func<TResult>>(r => getResult = r);
-
-            setupMock.Setup(setup => setup.Returns(It.IsAny<TResult>()))
-                     .Returns(returnsMock.Object)
-                     .Callback<TResult>(r => getResult = () => r);
-
-            returnsMock.Setup(rm => rm.Callback(It.IsAny<Action>()))
-                       .Callback<Action>(a => callback = a);
-
-            var commandMock = new Mock<IDbCommand>();
-
-            commandMock.SetupGet(a => a.Parameters)
-                       .Returns(new Mock<IDataParameterCollection>().Object);
-
-            commandMock.Setup(a => a.CreateParameter())
-                       .Returns(new Mock<IDbDataParameter>().Object);
-
-            mockResult(commandMock, () =>
-            {
-                var result = getResult();
-                callback?.Invoke();
-                return result;
-            });
-
-            mock.Setup(connection => connection.CreateCommand())
-                .Returns(commandMock.Object);
-
-            return setupMock.Object;
+            return DbCommandSetup.SetupNonQueryCommandAsync(
+                mock,
+                (commandMock, result) =>
+                {
+                    commandMock
+                        .Setup(command => command.ExecuteNonQueryAsync(It.IsAny<CancellationToken>()))
+                        .ReturnsAsync(result);
+                });
         }
 
-        static ISetup<IDbConnection, TResult> SetupExecuteScalar<TResult>(Mock<IDbConnection> mock) =>
-            SetupCommand<TResult>(mock, (commandMock, result) =>
-                commandMock.Setup(command => command.ExecuteScalar())
-                           .Returns(() => result()));
+        private static ISetup<TConnection, Task<TResult>> SetupExecuteScalarAsync<TResult, TConnection>(Mock<TConnection> mock)
+            where TConnection : class, IDbConnection
+        {
+            return DbCommandSetup.SetupCommandAsync<TResult, TConnection>(
+                mock,
+                (commandMock, result) =>
+                {
+                    commandMock
+                        .Setup(command => command.ExecuteScalarAsync(It.IsAny<CancellationToken>()))
+                        .ReturnsAsync(result);
+                });
+        }
 
-        static ISetup<IDbConnection, int> SetupExecute(Mock<IDbConnection> mock) =>
-            SetupCommand<int>(mock, (commandMock, result) =>
-                commandMock.Setup(command => command.ExecuteNonQuery())
-                           .Returns(result));
+        private static ISetup<TConnection, Task<TResult>> SetupQueryAsync<TResult, TConnection>(Mock<TConnection> mock)
+            where TConnection : class, IDbConnection
+        {
+            return DbCommandSetup.SetupCommandAsync<TResult, TConnection>(
+                mock,
+                (commandMock, result) =>
+                {
+                    commandMock
+                    .Protected()
+                    .Setup<Task<DbDataReader>>(
+                        "ExecuteDbDataReaderAsync",
+                        ItExpr.IsAny<CommandBehavior>(),
+                        ItExpr.IsAny<CancellationToken>())
+                    .ReturnsAsync(() => DbDataReaderProvider.DbDataReader(result));
+                });
+        }
+
+        #endregion
     }
 }

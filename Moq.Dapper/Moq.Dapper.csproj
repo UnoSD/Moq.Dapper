@@ -1,14 +1,14 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <Version>1.0.0.10</Version>
+    <Version>1.1.0.0</Version>
     <PackageId>Moq.Dapper</PackageId>
     <Description>Moq extensions for Dapper methods.</Description>
     <Copyright>Copyright 2017</Copyright>
     <FileVersion>1.0.0.0</FileVersion>
     <Company>Stefano d'Antonio</Company>
-    <Authors>Stefano d'Antonio</Authors>
+    <Authors>Stefano d'Antonio; Benjamin Huby</Authors>
     <Product>Moq.Dapper</Product>
     <PackageLicenseUrl>https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/UnoSD/Moq.Dapper</PackageProjectUrl>
@@ -24,8 +24,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Dapper" Version="1.50.7" />
-    <PackageReference Include="Moq" Version="4.7.1" />
+    <PackageReference Include="Dapper" Version="1.60.1" />
+    <PackageReference Include="Moq" Version="4.10.1" />
   </ItemGroup>
 
 </Project>
