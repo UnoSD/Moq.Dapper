@@ -24,8 +24,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Dapper" Version="1.50.7" />
-    <PackageReference Include="Moq" Version="4.7.1" />
+    <PackageReference Include="Dapper" Version="1.60.1" />
+    <PackageReference Include="Moq" Version="4.10.1" />
   </ItemGroup>
 
 </Project>
