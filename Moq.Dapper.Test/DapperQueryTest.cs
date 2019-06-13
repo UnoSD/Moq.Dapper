@@ -2,7 +2,6 @@
 using System.Data;
 using System.Linq;
 using Dapper;
-using Moq.Dapper.Test.Shared;
 using NUnit.Framework;
 
 namespace Moq.Dapper.Test
@@ -41,7 +40,7 @@ namespace Moq.Dapper.Test
                     DateTimeProperty = new DateTime(2000, 1, 1),
                     NullableDateTimeProperty = new DateTime(2000, 1, 1),
                     NullableIntegerProperty = 9,
-                    ByteArrayPropery = new byte[] { 1, 2, 4, 8 }
+                    ByteArrayProperty = new byte[] { 1, 2, 4, 8 }
                 },
                 new ComplexType
                 {
@@ -51,7 +50,7 @@ namespace Moq.Dapper.Test
                     DateTimeProperty = new DateTime(2000, 1, 2),
                     NullableDateTimeProperty = new DateTime(2000, 1, 2),
                     NullableIntegerProperty = 99,
-                    ByteArrayPropery = new byte[] { 1, 3, 5, 7 }
+                    ByteArrayProperty = new byte[] { 1, 3, 5, 7 }
                 },
                 new ComplexType
                 {
@@ -79,7 +78,7 @@ namespace Moq.Dapper.Test
                                                co.DateTimeProperty == complexObject.DateTimeProperty &&
                                                co.NullableIntegerProperty == complexObject.NullableIntegerProperty &&
                                                co.NullableDateTimeProperty == complexObject.NullableDateTimeProperty &&
-                                               co.ByteArrayPropery == complexObject.ByteArrayPropery);
+                                               co.ByteArrayProperty == complexObject.ByteArrayProperty);
 
                 Assert.That(match.Count, Is.EqualTo(1));
             }
