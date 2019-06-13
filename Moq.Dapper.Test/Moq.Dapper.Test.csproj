@@ -72,7 +72,6 @@
     <Compile Include="DapperQuerySingleTest.cs" />
     <Compile Include="DapperQuerySingleAsyncTest.cs" />
     <Compile Include="DapperQueryAsyncTest.cs" />
-    <Compile Include="DapperQueryFirstTest.cs" />
     <Compile Include="DapperQueryTest.cs" />
     <Compile Include="DapperTest.cs" />
     <Compile Include="DataContextTest.cs" />

@@ -10,6 +10,36 @@ namespace Moq.Dapper.Test
     public class DapperQueryTest
     {
         [Test]
+        public void QueryFirstOrDefault()
+        {
+            var connection = new Mock<IDbConnection>();
+
+            const int expected = 7;
+
+            connection.SetupDapper(c => c.QueryFirstOrDefault<int>(It.IsAny<string>(), null, null, null, null))
+                      .Returns(expected);
+
+            var actual = connection.Object.QueryFirstOrDefault<int>("");
+
+            Assert.That(actual, Is.EqualTo(expected));
+        }
+
+        [Test]
+        public void QueryFirstOrDefaultString()
+        {
+            var connection = new Mock<IDbConnection>();
+
+            const string expected = "test";
+
+            connection.SetupDapper(c => c.QueryFirstOrDefault<string>(It.IsAny<string>(), null, null, null, null))
+                      .Returns(expected);
+
+            var actual = connection.Object.QueryFirstOrDefault<string>("");
+
+            Assert.That(actual, Is.EqualTo(expected));
+        }
+
+        [Test]
         public void QueryGeneric()
         {
             var connection = new Mock<IDbConnection>();
