@@ -2,13 +2,13 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <Version>1.1.0.0</Version>
+    <Version>1.0.0.11</Version>
     <PackageId>Moq.Dapper</PackageId>
     <Description>Moq extensions for Dapper methods.</Description>
     <Copyright>Copyright 2017</Copyright>
     <FileVersion>1.0.0.0</FileVersion>
     <Company>Stefano d'Antonio</Company>
-    <Authors>Stefano d'Antonio; Benjamin Huby</Authors>
+    <Authors>Stefano d'Antonio</Authors>
     <Product>Moq.Dapper</Product>
     <PackageLicenseUrl>https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/UnoSD/Moq.Dapper</PackageProjectUrl>
@@ -16,7 +16,7 @@
     <PackageTags>Moq Dapper Test</PackageTags>
     <PackageReleaseNotes>Updates Dapper Dependency.</PackageReleaseNotes>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <AssemblyVersion>1.0.0.10</AssemblyVersion>
+    <AssemblyVersion>1.0.0.11</AssemblyVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
