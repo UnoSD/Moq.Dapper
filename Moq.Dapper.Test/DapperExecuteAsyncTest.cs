@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Data;
 using System.Data.Common;
 using System.Threading.Tasks;
@@ -19,9 +19,9 @@ namespace Moq.Dapper.Test
                       .ReturnsAsync(1);
 
             var actual = connection.Object
-                .ExecuteAsync("")
-                .GetAwaiter()
-                .GetResult();
+                                   .ExecuteAsync("")
+                                   .GetAwaiter()
+                                   .GetResult();
 
             Assert.That(actual, Is.EqualTo(1));
         }
@@ -35,9 +35,9 @@ namespace Moq.Dapper.Test
                       .ReturnsAsync(1);
 
             var actual = connection.Object
-                .ExecuteAsync("")
-                .GetAwaiter()
-                .GetResult();
+                                   .ExecuteAsync("")
+                                   .GetAwaiter()
+                                   .GetResult();
 
             Assert.That(actual, Is.EqualTo(1));
         }
@@ -49,13 +49,14 @@ namespace Moq.Dapper.Test
 
             const int expected = 77;
 
-            connection.As<IDbConnection>().SetupDapperAsync(c => c.ExecuteScalarAsync(It.IsAny<string>(), null, null, null, null))
+            connection.As<IDbConnection>()
+                      .SetupDapperAsync(c => c.ExecuteScalarAsync(It.IsAny<string>(), null, null, null, null))
                       .ReturnsAsync(expected);
 
             var actual = connection.Object
-                .ExecuteScalarAsync("")
-                .GetAwaiter()
-                .GetResult() as Func<object>;
+                                   .ExecuteScalarAsync("")
+                                   .GetAwaiter()
+                                   .GetResult() as Func<object>;
 
             Assert.That(actual, Is.Not.Null);
             Assert.That(actual(), Is.EqualTo(expected));
@@ -72,9 +73,9 @@ namespace Moq.Dapper.Test
                       .ReturnsAsync(expected);
 
             var actual = connection.Object
-                .ExecuteScalarAsync("", new { id = 1 })
-                .GetAwaiter()
-                .GetResult() as Func<object>;
+                                   .ExecuteScalarAsync("", new { id = 1 })
+                                   .GetAwaiter()
+                                   .GetResult() as Func<object>;
 
             Assert.That(actual, Is.Not.Null);
             Assert.That(actual(), Is.EqualTo(expected));
