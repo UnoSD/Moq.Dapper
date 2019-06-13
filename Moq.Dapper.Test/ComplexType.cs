@@ -10,6 +10,6 @@ namespace Moq.Dapper.Test
         public DateTime DateTimeProperty { get; set; }
         public DateTime? NullableDateTimeProperty { get; set; }
         public int? NullableIntegerProperty { get; set; }
-        public byte[] ByteArrayProperty { get; set; }
+        public byte[] ByteArrayPropery { get; set; }
     }
 }
