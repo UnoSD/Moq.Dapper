@@ -14,7 +14,7 @@ namespace Moq.Dapper.Test
         {
             var connection = new Mock<DbConnection>();
 
-            connection.SetupDapperAsync(c => c.ExecuteAsync("", null, null, null, null))
+            connection.SetupDapperAsync(c => c.ExecuteAsync(It.IsAny<string>(), null, null, null, null))
                       .ReturnsAsync(1);
 
             var result = connection.Object
