@@ -111,6 +111,7 @@ namespace Moq.Dapper
             mockResult(commandMock, () => result);
 
             mock
+                .As<IDbConnection>()
                 .Setup(m => m.CreateCommand())
                 .Returns(commandMock.Object);
 
