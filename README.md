@@ -57,6 +57,25 @@ public void QueryGenericComplexType()
 }
 ```
 
+Mocking a call to `QueryFirstOrDefault`:
+
+```csharp
+[Test]
+public void QueryGeneric()
+{
+    var connection = new Mock<IDbConnection>();
+
+    const int expected = 77;
+
+    connection.SetupDapper(c => c.QueryFirstOrDefault<int>(It.IsAny<string>(), null, null, true, null, null))
+              .Returns(expected);
+
+    var actual = connection.Object.QueryFirstOrDefault<int>("", null, null, true, null, null);
+
+    Assert.That(actual, Is.EqualTo(expected));
+}
+```
+
 Mocking a call to `ExecuteScalar`:
 
 ```csharp
@@ -76,7 +95,7 @@ public void ExecuteScalar()
 }
 ```
 
-Mocking a call to `QueryAsync`
+Mocking a call to `QueryAsync`:
 
 ```csharp
 [Test]
@@ -93,5 +112,43 @@ public async Task QueryAsyncGeneric()
 
     Assert.That(actual.Count, Is.EqualTo(expected.Length));
     Assert.That(actual, Is.EquivalentTo(expected));
+}
+```
+
+Mocking a call to `QuerySingleAsync`:
+
+```csharp
+[Test]
+public async Task QuerySingleAsyncGeneric()
+{
+    var connection = new Mock<DbConnection>();
+
+    const int expected = 7;
+
+    connection.SetupDapperAsync(c => c.QuerySingleAsync<int>(It.IsAny<string>(), null, null, null, null))
+              .ReturnsAsync(expected);
+
+    var actual = await connection.Object.QuerySingleAsync<int>("", null, null, true, null, null);
+
+    Assert.That(actual, Is.EqualTo(expected));
+}
+```
+
+Mocking a call to `ExecuteAsync`:
+
+```csharp
+[Test]
+public async Task ExecuteAsync()
+{
+    var connection = new Mock<DbConnection>().As<IDbConnection>();
+
+    const int expected = 1;
+
+    connection.SetupDapperAsync(c => c.ExecuteAsync(It.IsAny<string>(), null, null, null, null))
+              .ReturnsAsync(expected);
+
+    var actual = await connection.Object.ExecuteAsync("");
+
+    Assert.That(actual, Is.EqualTo(expected));
 }
 ```
