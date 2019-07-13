@@ -70,7 +70,7 @@ namespace Moq.Dapper.Test
                     DateTimeProperty = new DateTime(2000, 1, 1),
                     NullableDateTimeProperty = new DateTime(2000, 1, 1),
                     NullableIntegerProperty = 9,
-                    ByteArrayProperty = new byte[] { 1, 2, 4, 8 }
+                    ByteArrayPropery = new byte[] { 1, 2, 4, 8 }
                 },
                 new ComplexType
                 {
@@ -80,7 +80,7 @@ namespace Moq.Dapper.Test
                     DateTimeProperty = new DateTime(2000, 1, 2),
                     NullableDateTimeProperty = new DateTime(2000, 1, 2),
                     NullableIntegerProperty = 99,
-                    ByteArrayProperty = new byte[] { 1, 3, 5, 7 }
+                    ByteArrayPropery = new byte[] { 1, 3, 5, 7 }
                 },
                 new ComplexType
                 {
@@ -108,10 +108,21 @@ namespace Moq.Dapper.Test
                                                co.DateTimeProperty == complexObject.DateTimeProperty &&
                                                co.NullableIntegerProperty == complexObject.NullableIntegerProperty &&
                                                co.NullableDateTimeProperty == complexObject.NullableDateTimeProperty &&
-                                               co.ByteArrayProperty == complexObject.ByteArrayProperty);
+                                               co.ByteArrayPropery == complexObject.ByteArrayPropery);
 
                 Assert.That(match.Count, Is.EqualTo(1));
             }
+        }
+
+        public class ComplexType
+        {
+            public int IntegerProperty { get; set; }
+            public string StringProperty { get; set; }
+            public Guid GuidProperty { get; set; }
+            public DateTime DateTimeProperty { get; set; }
+            public DateTime? NullableDateTimeProperty { get; set; }
+            public int? NullableIntegerProperty { get; set; }
+            public byte[] ByteArrayPropery { get; set; }
         }
     }
 }

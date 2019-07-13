@@ -49,7 +49,7 @@ namespace Moq.Dapper.Test
 
             var expected = new[]
             {
-                new ComplexType
+                new DapperQueryTest.ComplexType
                 {
                     StringProperty = "String1",
                     IntegerProperty = 7,
@@ -59,7 +59,7 @@ namespace Moq.Dapper.Test
                     NullableIntegerProperty = 9,
                     ByteArrayPropery = new byte[] { 7 }
                 },
-                new ComplexType
+                new DapperQueryTest.ComplexType
                 {
                     StringProperty = "String2",
                     IntegerProperty = 77,
@@ -67,9 +67,9 @@ namespace Moq.Dapper.Test
                     DateTimeProperty = new DateTime(2000, 1, 2),
                     NullableDateTimeProperty = new DateTime(2000, 1, 2),
                     NullableIntegerProperty = 99,
-                    ByteArrayProperty = new byte[] { 7, 7 }
+                    ByteArrayPropery = new byte[] { 7, 7 }
                 },
-                new ComplexType
+                new DapperQueryTest.ComplexType
                 {
                     StringProperty = "String3",
                     IntegerProperty = 777,
@@ -77,15 +77,15 @@ namespace Moq.Dapper.Test
                     DateTimeProperty = new DateTime(2000, 1, 3),
                     NullableDateTimeProperty = null,
                     NullableIntegerProperty = null,
-                    ByteArrayProperty = new byte[] { 7, 7, 7 }
+                    ByteArrayPropery = new byte[] { 7, 7, 7 }
                 }
             };
 
-            connection.SetupDapperAsync(c => c.QueryAsync<ComplexType>(It.IsAny<string>(), null, null, null, null))
+            connection.SetupDapperAsync(c => c.QueryAsync<DapperQueryTest.ComplexType>(It.IsAny<string>(), null, null, null, null))
                       .ReturnsAsync(expected);
 
             var actual = connection.Object
-                                   .QueryAsync<ComplexType>("")
+                                   .QueryAsync<DapperQueryTest.ComplexType>("")
                                    .GetAwaiter()
                                    .GetResult()
                                    .ToList();
@@ -100,7 +100,7 @@ namespace Moq.Dapper.Test
                                                co.DateTimeProperty == complexObject.DateTimeProperty &&
                                                co.NullableIntegerProperty == complexObject.NullableIntegerProperty &&
                                                co.NullableDateTimeProperty == complexObject.NullableDateTimeProperty &&
-                                               co.ByteArrayProperty == complexObject.ByteArrayProperty);
+                                               co.ByteArrayPropery == complexObject.ByteArrayPropery);
 
                 Assert.That(match.Count, Is.EqualTo(1));
             }

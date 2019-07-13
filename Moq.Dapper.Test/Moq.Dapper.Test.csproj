@@ -76,7 +76,6 @@
     <Compile Include="DapperTest.cs" />
     <Compile Include="DataContextTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ComplexType.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
