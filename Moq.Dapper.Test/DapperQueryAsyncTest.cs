@@ -4,6 +4,7 @@ using System.Data.Common;
 using System.Linq;
 using Dapper;
 using NUnit.Framework;
+using static Moq.Dapper.Test.DapperQueryTest;
 
 namespace Moq.Dapper.Test
 {
@@ -49,7 +50,7 @@ namespace Moq.Dapper.Test
 
             var expected = new[]
             {
-                new DapperQueryTest.ComplexType
+                new ComplexType
                 {
                     StringProperty = "String1",
                     IntegerProperty = 7,
@@ -59,7 +60,7 @@ namespace Moq.Dapper.Test
                     NullableIntegerProperty = 9,
                     ByteArrayPropery = new byte[] { 7 }
                 },
-                new DapperQueryTest.ComplexType
+                new ComplexType
                 {
                     StringProperty = "String2",
                     IntegerProperty = 77,
@@ -69,7 +70,7 @@ namespace Moq.Dapper.Test
                     NullableIntegerProperty = 99,
                     ByteArrayPropery = new byte[] { 7, 7 }
                 },
-                new DapperQueryTest.ComplexType
+                new ComplexType
                 {
                     StringProperty = "String3",
                     IntegerProperty = 777,
@@ -81,11 +82,11 @@ namespace Moq.Dapper.Test
                 }
             };
 
-            connection.SetupDapperAsync(c => c.QueryAsync<DapperQueryTest.ComplexType>(It.IsAny<string>(), null, null, null, null))
+            connection.SetupDapperAsync(c => c.QueryAsync<ComplexType>(It.IsAny<string>(), null, null, null, null))
                       .ReturnsAsync(expected);
 
             var actual = connection.Object
-                                   .QueryAsync<DapperQueryTest.ComplexType>("")
+                                   .QueryAsync<ComplexType>("")
                                    .GetAwaiter()
                                    .GetResult()
                                    .ToList();
