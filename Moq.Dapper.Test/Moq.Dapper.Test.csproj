@@ -10,7 +10,7 @@
     <Product>Moq.Dapper</Product>
     <PackageLicenseUrl>https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/UnoSD/Moq.Dapper</PackageProjectUrl>
-    <RepositoryUrl></RepositoryUrl>
+    <RepositoryUrl>https://github.com/UnoSD/Moq.Dapper</RepositoryUrl>
     <PackageTags>Moq Dapper Test</PackageTags>
     <PackageReleaseNotes>First release.</PackageReleaseNotes>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
