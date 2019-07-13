@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -10,7 +10,7 @@
     <Company>Stefano d'Antonio</Company>
     <Authors>Stefano d'Antonio</Authors>
     <Product>Moq.Dapper</Product>
-    <PackageLicenseUrl>https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html</PackageLicenseUrl>
+    <PackageLicenseExpression>GPL-2.0-only</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/UnoSD/Moq.Dapper</PackageProjectUrl>
     <RepositoryUrl></RepositoryUrl>
     <PackageTags>Moq Dapper Test</PackageTags>

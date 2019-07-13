@@ -8,7 +8,7 @@
     <Company>Stefano d'Antonio</Company>
     <Authors>Stefano d'Antonio</Authors>
     <Product>Moq.Dapper</Product>
-    <PackageLicenseUrl>https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html</PackageLicenseUrl>
+    <PackageLicenseExpression>GPL-2.0</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/UnoSD/Moq.Dapper</PackageProjectUrl>
     <RepositoryUrl>https://github.com/UnoSD/Moq.Dapper</RepositoryUrl>
     <PackageTags>Moq Dapper Test</PackageTags>
