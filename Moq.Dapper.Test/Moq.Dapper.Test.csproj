@@ -18,6 +18,11 @@
     <IsPackable>false</IsPackable>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="Data\**" />
+    <EmbeddedResource Remove="Data\**" />
+    <None Remove="Data\**" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="Dapper" Version="1.50.5" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.7.0" />
     <PackageReference Include="Moq" Version="4.9.0" />
@@ -26,8 +31,5 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Moq.Dapper\Moq.Dapper.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Data" />
   </ItemGroup>
 </Project>
