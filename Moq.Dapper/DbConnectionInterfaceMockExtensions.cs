@@ -47,6 +47,7 @@ namespace Moq.Dapper
             {
                 case nameof(SqlMapper.QueryAsync):
                     return SetupQueryAsync<TResult>(mock);
+                
                 default:
                     throw new NotSupportedException();
             }
