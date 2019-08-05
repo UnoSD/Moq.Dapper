@@ -25,6 +25,8 @@ namespace Moq.Dapper
                     return SetupQueryAsync<TResult>(mock);
                 case nameof(SqlMapper.ExecuteAsync) when typeof(TResult) == typeof(int):
                     return (ISetup<DbConnection, Task<TResult>>)SetupExecuteAsync(mock);
+                case nameof(SqlMapper.ExecuteScalarAsync):
+                    return (ISetup<DbConnection, Task<TResult>>)SetupExecuteScalarAsync(mock);
                 default:
                     throw new NotSupportedException();
             }
@@ -71,5 +73,39 @@ namespace Moq.Dapper
 
             return setupMock.Object;
         }
+
+        static ISetup<DbConnection, Task<object>> SetupExecuteScalarCommandAsync(Mock<DbConnection> mock, Action<Mock<DbCommand>, Func<object>> mockResult)
+        {
+            var setupMock = new Mock<ISetup<DbConnection, Task<object>>>();
+
+            var result = default(object);
+
+            setupMock.Setup(setup => setup.Returns(It.IsAny<Func<Task<object>>>()))
+                     .Callback<Func<Task<object>>>(r => result = r().Result);
+
+            var commandMock = new Mock<DbCommand>();
+
+            commandMock.Protected()
+                       .SetupGet<DbParameterCollection>("DbParameterCollection")
+                       .Returns(new Mock<DbParameterCollection>().Object);
+
+            commandMock.Protected()
+                       .Setup<DbParameter>("CreateDbParameter")
+                       .Returns(new Mock<DbParameter>().Object);
+
+            mockResult(commandMock, () => result);
+
+            mock.As<IDbConnection>()
+                .Setup(m => m.CreateCommand())
+                .Returns(commandMock.Object);
+
+            return setupMock.Object;
+        }
+
+        static ISetup<DbConnection, Task<object>> SetupExecuteScalarAsync(Mock<DbConnection> mock) =>
+            SetupExecuteScalarCommandAsync(mock, (commandMock, result) =>
+            {
+                commandMock.Setup(x => x.ExecuteScalarAsync(It.IsAny<CancellationToken>())).ReturnsAsync(result);
+            });
     }
 }
