@@ -22,24 +22,20 @@ namespace Moq.Dapper.Test
 
         public static ISetup<IDbConnection, T> SetupDapperV2<T>
         (
-            this Mock<IDbConnection> connection,
+            this Mock<IDbConnection> connectionMock,
             Expression<Func<IDbConnection, T>> expression
         )
         {
             var invocationInfo = expression.ValidateParse();
 
-            var commandMock = connection.SetupCommand();
+            var commandMock = connectionMock.CreateCommandMock();
 
-            var setup = CreateCallbackSetup<T>(commandMock);
-
-            //var m = commandMock.GetInvokedMethod(invocationInfo);
-            //
-            //connection.OnInvokeReturn(() => commandMock.SetupLateBindValue());
+            var setup = UpdateCommandSetupOnConnectionSetup<T>(commandMock);
 
             return setup;
         }
 
-        static ISetup<IDbConnection, T> CreateCallbackSetup<T>(Mock<DbCommand> commandMock)
+        static ISetup<IDbConnection, T> UpdateCommandSetupOnConnectionSetup<T>(Mock<DbCommand> commandMock)
         {
             var setupMock = new Mock<ISetup<IDbConnection, T>>();
 
@@ -65,7 +61,7 @@ namespace Moq.Dapper.Test
             }
         }
 
-        public static Mock<DbCommand> SetupCommand(this Mock<IDbConnection> cm)
+        public static Mock<DbCommand> CreateCommandMock(this Mock<IDbConnection> cm)
         {
             var dbCommandMock = new Mock<DbCommand>();
 
