@@ -11,9 +11,14 @@ namespace Moq.Dapper.Test
 {
     public static class MoqDapper
     {
-        static Dictionary<string, Func<string, object>> _methods;
         const string NotMethodCall = "Expression is not a method call. Only Dapper methods allowed.";
         const string NotDapperMethod = "Not a Dapper method used in the expression.";
+
+        static readonly Dictionary<string, Func<string, object>> Methods =
+            new Dictionary<string, Func<string, object>>
+            {
+                ["Execute"] = null
+            };
 
         public static ISetup<IDbConnection, T> SetupDapperV2<T>
         (
@@ -21,71 +26,71 @@ namespace Moq.Dapper.Test
             Expression<Func<IDbConnection, T>> expression
         )
         {
-            var invocationInfo = expression.Parse();
+            var invocationInfo = expression.ValidateParse();
 
-            var cmd = connection.SetupCommand();
+            var commandMock = connection.SetupCommand();
 
-            var m = cmd.GetInvokedMethod(invocationInfo);
+            var setup = CreateCallbackSetup<T>(commandMock);
 
-            connection.OnInvokeReturn(() => cmd.SetupLateBindValue());
+            //var m = commandMock.GetInvokedMethod(invocationInfo);
+            //
+            //connection.OnInvokeReturn(() => commandMock.SetupLateBindValue());
 
-            return null;
+            return setup;
+        }
+
+        static ISetup<IDbConnection, T> CreateCallbackSetup<T>(Mock<DbCommand> commandMock)
+        {
+            var setupMock = new Mock<ISetup<IDbConnection, T>>();
+
+            setupMock.Setup(s => s.Returns(It.IsAny<T>()))
+                     .Callback<T>(commandMock.SetupCommand);
+
+            return setupMock.Object;
+        }
+
+        static void SetupCommand<T>(this Mock<DbCommand> commandMock, T value)
+        {
+            switch (value)
+            {
+                case int x when "Method is" != "Execute":
+                    commandMock.Setup(c => c.ExecuteNonQuery())
+                               .Returns(x);
+                    break;
+                //default:
+                //    var dt = value.ToDataTable();
+                //    commandMock.Setup(c => c.ExecuteReader())
+                //               .Returns(new DataTableReader(dt));
+                //    break;
+            }
         }
 
         public static Mock<DbCommand> SetupCommand(this Mock<IDbConnection> cm)
         {
             var dbCommandMock = new Mock<DbCommand>();
 
+            dbCommandMock.SetupProperty(c => c.CommandText);
+
             cm.Setup(c => c.CreateCommand())
-                .Returns(dbCommandMock.Object);
+              .Returns(dbCommandMock.Object);
 
             return dbCommandMock;
         }
 
-        //public static ISetup<IDbConnection, T> SetupDapperV2<T>
-        //(
-        //    this Mock<IDbConnection> connection,
-        //    Expression<Func<IDbConnection, T>> expression
-        //)
-        //{
-        //    var p = expression.Parse();
-
-        //    T valueStore = default;
-
-        //    var dbCommandMock = new Mock<IDbCommand>();
-
-        //    //dbCommandMock.SetupProperty(c => c.CommandText);
-        //    //dbCommandMock.Object.CommandText == expression.Body...
-
-        //    dbCommandMock.Setup(c => c.ExecuteNonQuery())
-        //                 .Returns(() => valueStore is int x ? x : 0);
-
-        //    connection.Setup(c => c.CreateCommand())
-        //              .Returns(dbCommandMock.Object);
-
-        //    var setupMock = new Mock<ISetup<IDbConnection, T>>();
-
-        //    setupMock.Setup(s => s.Returns(It.IsAny<T>()))
-        //             .Callback<T>(value => valueStore = value);
-
-        //    return setupMock.Object;
-        //}
-
-        public static object Parse<T>(
-            this Expression<Func<IDbConnection, T>> expression)
+        static InvocationInfo ValidateParse(this LambdaExpression expression)
         {
-            var call = 
+            var call =
                 expression.Body as MethodCallExpression ??
                 throw new ArgumentException(NotMethodCall);
 
-            return call.Method.DeclaringType != typeof(SqlMapper) ? 
-                throw new ArgumentException(NotDapperMethod) :
-                Parse(call);
+            return call.Method.DeclaringType != typeof(SqlMapper) ?
+                   throw new ArgumentException(NotDapperMethod) :
+                   call.ValidateParse();
         }
 
-        public static object Parse(MethodCallExpression call)
+        static InvocationInfo ValidateParse(this MethodCallExpression call)
         {
-            var sqlParameter = 
+            var sqlParameter =
                 call.Method
                     .GetParameters()
                     .FirstOrDefault(p => p.Name == "sql");
@@ -95,12 +100,22 @@ namespace Moq.Dapper.Test
                     null :
                     (call.Arguments[sqlParameter.Position] as ConstantExpression)?.Value as string;
 
-            return Parse(call.Method.Name, sqlArgument);
+            return ValidateParse(call.Method.Name, sqlArgument);
         }
 
-        public static object Parse(string methodName, string sqlArgument) =>
-            _methods.TryGetValue(methodName, out var method) ?
-                method(sqlArgument) :
-                throw new NotImplementedException(methodName);
+        static InvocationInfo ValidateParse(string methodName, string sqlArgument) =>
+            Methods.ContainsKey(methodName) ?
+            new InvocationInfo
+            {
+                Method = methodName,
+                Sql = sqlArgument
+            } : 
+            throw new NotImplementedException(methodName);
+
+        class InvocationInfo
+        {
+            internal string Method { get; set; }
+            internal string Sql { get; set; }
+        }
     }
 }
