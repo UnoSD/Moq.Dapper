@@ -49,7 +49,7 @@ namespace Moq.Dapper.Test
         {
             switch (value)
             {
-                case int x when "Method is" != "Execute":
+                case int x when "Method is" != nameof(SqlMapper.Execute):
                     commandMock.Setup(c => c.ExecuteNonQuery())
                                .Returns(x);
                     break;
