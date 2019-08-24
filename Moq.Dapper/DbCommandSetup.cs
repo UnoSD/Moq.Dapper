@@ -21,6 +21,8 @@ namespace Moq.Dapper
 
             var commandMock = new Mock<DbCommand>();
 
+            commandMock.SetupAllProperties();
+
             commandMock.Protected()
                        .SetupGet<DbParameterCollection>("DbParameterCollection")
                        .Returns(new Mock<DbParameterCollection>().Object);

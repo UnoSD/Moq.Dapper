@@ -3,6 +3,7 @@ using System.Collections;
 using System.Data;
 using System.Data.Common;
 using System.Linq;
+using System.Numerics;
 
 namespace Moq.Dapper
 {
@@ -41,6 +42,7 @@ namespace Moq.Dapper
                     t == typeof(DateTime) ||
                     t == typeof(DateTimeOffset) ||
                     t == typeof(decimal) ||
+                    t == typeof(BigInteger) ||
                     t == typeof(Guid) ||
                     t == typeof(string) ||
                     t == typeof(TimeSpan) ||
