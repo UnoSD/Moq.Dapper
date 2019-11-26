@@ -53,7 +53,7 @@ namespace Moq.Dapper.Test
             var expected = 7;
 
             connection.SetupDapperAsync(c => c.QuerySingleAsync<int>(It.IsAny<string>(), null, null, null, null))
-                .ReturnsAsync(expected);
+                      .ReturnsAsync(expected);
 
             var actual = await connection.Object.QuerySingleAsync<int>("");
 
@@ -68,7 +68,7 @@ namespace Moq.Dapper.Test
             var expected = 7;
 
             connection.SetupDapperAsync(c => c.QuerySingleAsync<int>(It.IsAny<string>(), null, null, null, null))
-                .ReturnsAsync(expected);
+                      .ReturnsAsync(expected);
 
             var actual = await connection.Object.QuerySingleAsync<int>("");
 
@@ -83,7 +83,7 @@ namespace Moq.Dapper.Test
             var expected = 7;
 
             connection.SetupDapperAsync(c => c.QuerySingleOrDefaultAsync<int>(It.IsAny<string>(), null, null, null, null))
-                .ReturnsAsync(expected);
+                      .ReturnsAsync(expected);
 
             var actual = await connection.Object.QuerySingleOrDefaultAsync<int>("");
 
@@ -98,7 +98,7 @@ namespace Moq.Dapper.Test
             var expected = 7;
 
             connection.SetupDapperAsync(c => c.QuerySingleOrDefaultAsync<int>(It.IsAny<string>(), null, null, null, null))
-                .ReturnsAsync(expected);
+                      .ReturnsAsync(expected);
 
             var actual = await connection.Object.QuerySingleOrDefaultAsync<int>("");
 
@@ -113,7 +113,7 @@ namespace Moq.Dapper.Test
             var expected = 7;
 
             connection.SetupDapperAsync(c => c.QueryFirstAsync<int>(It.IsAny<string>(), null, null, null, null))
-                .ReturnsAsync(expected);
+                      .ReturnsAsync(expected);
 
             var actual = await connection.Object.QueryFirstAsync<int>("");
 
@@ -128,7 +128,7 @@ namespace Moq.Dapper.Test
             var expected = 7;
 
             connection.SetupDapperAsync(c => c.QueryFirstAsync<int>(It.IsAny<string>(), null, null, null, null))
-                .ReturnsAsync(expected);
+                      .ReturnsAsync(expected);
 
             var actual = await connection.Object.QueryFirstAsync<int>("");
 
@@ -143,7 +143,7 @@ namespace Moq.Dapper.Test
             var expected = 7;
 
             connection.SetupDapperAsync(c => c.QueryFirstOrDefaultAsync<int>(It.IsAny<string>(), null, null, null, null))
-                .ReturnsAsync(expected);
+                      .ReturnsAsync(expected);
 
             var actual = await connection.Object.QueryFirstOrDefaultAsync<int>("");
 
@@ -158,7 +158,7 @@ namespace Moq.Dapper.Test
             var expected = 7;
 
             connection.SetupDapperAsync(c => c.QueryFirstOrDefaultAsync<int>(It.IsAny<string>(), null, null, null, null))
-                .ReturnsAsync(expected);
+                      .ReturnsAsync(expected);
 
             var actual = await connection.Object.QueryFirstOrDefaultAsync<int>("");
 
@@ -166,7 +166,7 @@ namespace Moq.Dapper.Test
         }
 
         [Test]
-        public void QueryAsyncGenericComplexType()
+        public async Task QueryAsyncGenericComplexType()
         {
             var connection = new Mock<DbConnection>();
 
@@ -213,10 +213,8 @@ namespace Moq.Dapper.Test
             connection.SetupDapperAsync(c => c.QueryAsync<ComplexType>(It.IsAny<string>(), null, null, null, null))
                       .ReturnsAsync(expected);
 
-            var actual = connection.Object
-                                   .QueryAsync<ComplexType>("")
-                                   .GetAwaiter()
-                                   .GetResult()
+            var actual = (await connection.Object
+                                   .QueryAsync<ComplexType>(""))
                                    .ToList();
 
             Assert.That(actual.Count, Is.EqualTo(expected.Length));

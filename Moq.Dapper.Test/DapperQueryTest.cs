@@ -19,7 +19,7 @@ namespace Moq.Dapper.Test
             var expected = new[] { 7, 77, 777 };
 
             connection.SetupDapper(c => c.Query<int>(It.IsAny<string>(), null, null, true, null, null))
-                .Returns(expected);
+                      .Returns(expected);
 
             var actual = connection.Object.Query<int>("").ToList();
 
@@ -35,7 +35,7 @@ namespace Moq.Dapper.Test
             const int expected = 7;
 
             connection.SetupDapper(c => c.QuerySingle<int>(It.IsAny<string>(), null, null, null, null))
-                .Returns(expected);
+                      .Returns(expected);
 
             var actual = connection.Object.QuerySingle<int>("");
 
@@ -50,7 +50,7 @@ namespace Moq.Dapper.Test
             const int expected = 7;
 
             connection.SetupDapper(c => c.QuerySingleOrDefault<int>(It.IsAny<string>(), null, null, null, null))
-                .Returns(expected);
+                      .Returns(expected);
 
             var actual = connection.Object.QuerySingleOrDefault<int>("");
 
@@ -65,7 +65,7 @@ namespace Moq.Dapper.Test
             const int expected = 7;
 
             connection.SetupDapper(c => c.QueryFirst<int>(It.IsAny<string>(), null, null, null, null))
-                .Returns(expected);
+                      .Returns(expected);
 
             var actual = connection.Object.QueryFirst<int>("");
 
