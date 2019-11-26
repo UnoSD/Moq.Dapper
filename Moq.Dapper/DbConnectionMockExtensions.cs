@@ -57,7 +57,7 @@ namespace Moq.Dapper
             var result = default(int);
 
             setupMock.Setup(setup => setup.Returns(It.IsAny<Func<Task<int>>>()))
-                     .Callback<Func<Task<int>>>(r => result = r().Result);
+                     .Callback<Func<Task<int>>>(r => result = r().GetAwaiter().GetResult());
 
             var commandMock = new Mock<DbCommand>();
 
@@ -87,7 +87,7 @@ namespace Moq.Dapper
             var result = default(object);
 
             setupMock.Setup(setup => setup.Returns(It.IsAny<Func<Task<object>>>()))
-                     .Callback<Func<Task<object>>>(r => result = r().Result);
+                     .Callback<Func<Task<object>>>(r => result = r().GetAwaiter().GetResult());
 
             var commandMock = new Mock<DbCommand>();
 
