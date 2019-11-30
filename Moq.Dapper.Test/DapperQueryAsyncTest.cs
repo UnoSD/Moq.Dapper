@@ -14,7 +14,7 @@ namespace Moq.Dapper.Test
     public class DapperQueryAsyncTest
     {
         [Test]
-        public async Task QueryAsyncGeneric()
+        public void QueryAsyncGeneric()
         {
             var connection = new Mock<DbConnection>();
 
@@ -23,14 +23,14 @@ namespace Moq.Dapper.Test
             connection.SetupDapperAsync(c => c.QueryAsync<int>(It.IsAny<string>(), null, null, null, null))
                       .ReturnsAsync(expected);
 
-            var actual = (await connection.Object.QueryAsync<int>("")).ToList();
+            var actual = connection.Object.QueryAsync<int>("").GetAwaiter().GetResult().ToList();
 
             Assert.That(actual.Count, Is.EqualTo(expected.Length));
             Assert.That(actual, Is.EquivalentTo(expected));
         }
 
         [Test]
-        public async Task QueryAsyncGenericUsingDbConnectionInterface()
+        public void QueryAsyncGenericUsingDbConnectionInterface()
         {
             var connection = new Mock<IDbConnection>();
 
@@ -39,14 +39,14 @@ namespace Moq.Dapper.Test
             connection.SetupDapperAsync(c => c.QueryAsync<int>(It.IsAny<string>(), null, null, null, null))
                       .ReturnsAsync(expected);
 
-            var actual = (await connection.Object.QueryAsync<int>("")).ToList();
+            var actual = connection.Object.QueryAsync<int>("").GetAwaiter().GetResult().ToList();
 
             Assert.That(actual.Count, Is.EqualTo(expected.Length));
             Assert.That(actual, Is.EquivalentTo(expected));
         }
 
         [Test]
-        public async Task QuerySingleAsyncGeneric()
+        public void QuerySingleAsyncGeneric()
         {
             var connection = new Mock<DbConnection>();
 
@@ -55,13 +55,13 @@ namespace Moq.Dapper.Test
             connection.SetupDapperAsync(c => c.QuerySingleAsync<int>(It.IsAny<string>(), null, null, null, null))
                       .ReturnsAsync(expected);
 
-            var actual = await connection.Object.QuerySingleAsync<int>("");
+            var actual = connection.Object.QuerySingleAsync<int>("").GetAwaiter().GetResult();
 
             Assert.AreEqual(actual, expected);
         }
 
         [Test]
-        public async Task QuerySingleAsyncGenericUsingDbConnectionInterface()
+        public void QuerySingleAsyncGenericUsingDbConnectionInterface()
         {
             var connection = new Mock<IDbConnection>();
 
@@ -70,13 +70,13 @@ namespace Moq.Dapper.Test
             connection.SetupDapperAsync(c => c.QuerySingleAsync<int>(It.IsAny<string>(), null, null, null, null))
                       .ReturnsAsync(expected);
 
-            var actual = await connection.Object.QuerySingleAsync<int>("");
+            var actual = connection.Object.QuerySingleAsync<int>("").GetAwaiter().GetResult();
 
             Assert.AreEqual(actual, expected);
         }
 
         [Test]
-        public async Task QuerySingleOrDefaultAsyncGeneric()
+        public void QuerySingleOrDefaultAsyncGeneric()
         {
             var connection = new Mock<DbConnection>();
 
@@ -85,13 +85,13 @@ namespace Moq.Dapper.Test
             connection.SetupDapperAsync(c => c.QuerySingleOrDefaultAsync<int>(It.IsAny<string>(), null, null, null, null))
                       .ReturnsAsync(expected);
 
-            var actual = await connection.Object.QuerySingleOrDefaultAsync<int>("");
+            var actual = connection.Object.QuerySingleOrDefaultAsync<int>("").GetAwaiter().GetResult();
 
             Assert.AreEqual(actual, expected);
         }
 
         [Test]
-        public async Task QuerySingleOrDefaultAsyncGenericUsingDbConnectionInterface()
+        public void QuerySingleOrDefaultAsyncGenericUsingDbConnectionInterface()
         {
             var connection = new Mock<IDbConnection>();
 
@@ -100,13 +100,13 @@ namespace Moq.Dapper.Test
             connection.SetupDapperAsync(c => c.QuerySingleOrDefaultAsync<int>(It.IsAny<string>(), null, null, null, null))
                       .ReturnsAsync(expected);
 
-            var actual = await connection.Object.QuerySingleOrDefaultAsync<int>("");
+            var actual = connection.Object.QuerySingleOrDefaultAsync<int>("").GetAwaiter().GetResult();
 
             Assert.AreEqual(actual, expected);
         }
 
         [Test]
-        public async Task QueryFirstAsyncGeneric()
+        public void QueryFirstAsyncGeneric()
         {
             var connection = new Mock<DbConnection>();
 
@@ -115,13 +115,13 @@ namespace Moq.Dapper.Test
             connection.SetupDapperAsync(c => c.QueryFirstAsync<int>(It.IsAny<string>(), null, null, null, null))
                       .ReturnsAsync(expected);
 
-            var actual = await connection.Object.QueryFirstAsync<int>("");
+            var actual = connection.Object.QueryFirstAsync<int>("").GetAwaiter().GetResult();
 
             Assert.AreEqual(actual, expected);
         }
 
         [Test]
-        public async Task QueryFirstAsyncGenericUsingDbConnectionInterface()
+        public void QueryFirstAsyncGenericUsingDbConnectionInterface()
         {
             var connection = new Mock<DbConnection>();
 
@@ -130,13 +130,13 @@ namespace Moq.Dapper.Test
             connection.SetupDapperAsync(c => c.QueryFirstAsync<int>(It.IsAny<string>(), null, null, null, null))
                       .ReturnsAsync(expected);
 
-            var actual = await connection.Object.QueryFirstAsync<int>("");
+            var actual = connection.Object.QueryFirstAsync<int>("").GetAwaiter().GetResult();
 
             Assert.AreEqual(actual, expected);
         }
 
         [Test]
-        public async Task QueryFirstOrDefaultAsyncGeneric()
+        public void QueryFirstOrDefaultAsyncGeneric()
         {
             var connection = new Mock<DbConnection>();
 
@@ -145,13 +145,13 @@ namespace Moq.Dapper.Test
             connection.SetupDapperAsync(c => c.QueryFirstOrDefaultAsync<int>(It.IsAny<string>(), null, null, null, null))
                       .ReturnsAsync(expected);
 
-            var actual = await connection.Object.QueryFirstOrDefaultAsync<int>("");
+            var actual = connection.Object.QueryFirstOrDefaultAsync<int>("").GetAwaiter().GetResult();
 
             Assert.AreEqual(actual, expected);
         }
 
         [Test]
-        public async Task QueryFirstOrDefaultAsyncGenericUsingDbConnectionInterface()
+        public void QueryFirstOrDefaultAsyncGenericUsingDbConnectionInterface()
         {
             var connection = new Mock<DbConnection>();
 
@@ -160,13 +160,13 @@ namespace Moq.Dapper.Test
             connection.SetupDapperAsync(c => c.QueryFirstOrDefaultAsync<int>(It.IsAny<string>(), null, null, null, null))
                       .ReturnsAsync(expected);
 
-            var actual = await connection.Object.QueryFirstOrDefaultAsync<int>("");
+            var actual = connection.Object.QueryFirstOrDefaultAsync<int>("").GetAwaiter().GetResult();
 
             Assert.AreEqual(actual, expected);
         }
 
         [Test]
-        public async Task QueryAsyncGenericComplexType()
+        public void QueryAsyncGenericComplexType()
         {
             var connection = new Mock<DbConnection>();
 
@@ -213,8 +213,10 @@ namespace Moq.Dapper.Test
             connection.SetupDapperAsync(c => c.QueryAsync<ComplexType>(It.IsAny<string>(), null, null, null, null))
                       .ReturnsAsync(expected);
 
-            var actual = (await connection.Object
-                                   .QueryAsync<ComplexType>(""))
+            var actual = connection.Object
+                                   .QueryAsync<ComplexType>("")
+                                   .GetAwaiter()
+                                   .GetResult()
                                    .ToList();
 
             Assert.That(actual.Count, Is.EqualTo(expected.Length));

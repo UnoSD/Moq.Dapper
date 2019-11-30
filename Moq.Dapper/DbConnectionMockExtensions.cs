@@ -41,7 +41,8 @@ namespace Moq.Dapper
             {
                 commandMock.Protected()
                            .Setup<Task<DbDataReader>>("ExecuteDbDataReaderAsync", ItExpr.IsAny<CommandBehavior>(), ItExpr.IsAny<CancellationToken>())
-                           .ReturnsAsync(() => result().ToDataTable(typeof(TResult)).ToDataTableReader());
+                           .ReturnsAsync(() => result().ToDataTable(typeof(TResult))
+                                                                .ToDataTableReader());
             });
 
         static ISetup<DbConnection, Task<int>> SetupExecuteAsync(Mock<DbConnection> mock) =>
@@ -57,7 +58,7 @@ namespace Moq.Dapper
             var result = default(int);
 
             setupMock.Setup(setup => setup.Returns(It.IsAny<Func<Task<int>>>()))
-                     .Callback<Func<Task<int>>>(r => result = r().GetAwaiter().GetResult());
+                     .Callback<Func<Task<int>>>(r => result = r().Result);
 
             var commandMock = new Mock<DbCommand>();
 
@@ -87,7 +88,7 @@ namespace Moq.Dapper
             var result = default(object);
 
             setupMock.Setup(setup => setup.Returns(It.IsAny<Func<Task<object>>>()))
-                     .Callback<Func<Task<object>>>(r => result = r().GetAwaiter().GetResult());
+                     .Callback<Func<Task<object>>>(r => result = r().Result);
 
             var commandMock = new Mock<DbCommand>();
 
