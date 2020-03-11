@@ -32,6 +32,22 @@ namespace Moq.Dapper
             }
         }
 
+        public static ISetup<DbConnection, Task<int>> SetupDapperAsync(this Mock<DbConnection> mock, Expression<Func<DbConnection, Task<int>>> expression)
+        {
+            var call = expression.Body as MethodCallExpression;
+
+            if (call?.Method.DeclaringType != typeof(SqlMapper))
+                throw new ArgumentException("Not a Dapper method.");
+
+            switch (call.Method.Name)
+            {
+                case nameof(SqlMapper.ExecuteAsync):
+                    return SetupExecuteAsync(mock);
+                default:
+                    return SetupDapperAsync<int>(mock, expression);
+            }
+        }
+
         static ISetup<DbConnection, Task<TResult>> SetupQueryAsync<TResult>(Mock<DbConnection> mock) =>
             DbCommandSetup.SetupCommandAsync<TResult, DbConnection>(mock, (commandMock, result) =>
             {
