@@ -89,7 +89,7 @@ public async Task QueryAsyncGeneric()
     connection.SetupDapperAsync(c => c.QueryAsync<int>(It.IsAny<string>(), null, null, null, null))
               .ReturnsAsync(expected);
 
-    var actual = (await connection.Object.QueryAsync<int>("", null, null, true, null, null)).ToList();
+    var actual = (await connection.Object.QueryAsync<int>("", null, null, null, null)).ToList();
 
     Assert.That(actual.Count, Is.EqualTo(expected.Length));
     Assert.That(actual, Is.EquivalentTo(expected));
