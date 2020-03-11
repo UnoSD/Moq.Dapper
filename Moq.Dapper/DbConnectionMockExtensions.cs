@@ -26,7 +26,7 @@ namespace Moq.Dapper
                 case nameof(SqlMapper.ExecuteAsync) when typeof(TResult) == typeof(int):
                     return (ISetup<DbConnection, Task<TResult>>)SetupExecuteAsync(mock);
                 case nameof(SqlMapper.ExecuteScalarAsync):
-                    return (ISetup<DbConnection, Task<TResult>>)SetupExecuteScalarAsync(mock);
+                    return SetupExecuteScalarAsync<TResult>(mock);
                 default:
                     throw new NotSupportedException();
             }
@@ -76,14 +76,14 @@ namespace Moq.Dapper
             return setupMock.Object;
         }
 
-        static ISetup<DbConnection, Task<object>> SetupExecuteScalarCommandAsync(Mock<DbConnection> mock, Action<Mock<DbCommand>, Func<object>> mockResult)
+        static ISetup<DbConnection, Task<TResult>> SetupExecuteScalarCommandAsync<TResult>(Mock<DbConnection> mock, Action<Mock<DbCommand>, Func<object>> mockResult)
         {
-            var setupMock = new Mock<ISetup<DbConnection, Task<object>>>();
+            var setupMock = new Mock<ISetup<DbConnection, Task<TResult>>>();
 
-            var result = default(object);
+            var result = default(TResult);
 
-            setupMock.Setup(setup => setup.Returns(It.IsAny<Func<Task<object>>>()))
-                     .Callback<Func<Task<object>>>(r => result = r().Result);
+            setupMock.Setup(setup => setup.Returns(It.IsAny<Func<Task<TResult>>>()))
+                     .Callback<Func<Task<TResult>>>(r => result = r().Result);
 
             var commandMock = new Mock<DbCommand>();
 
@@ -104,8 +104,8 @@ namespace Moq.Dapper
             return setupMock.Object;
         }
 
-        static ISetup<DbConnection, Task<object>> SetupExecuteScalarAsync(Mock<DbConnection> mock) =>
-            SetupExecuteScalarCommandAsync(mock, (commandMock, result) =>
+        static ISetup<DbConnection, Task<TResult>> SetupExecuteScalarAsync<TResult>(Mock<DbConnection> mock) =>
+            SetupExecuteScalarCommandAsync<TResult>(mock, (commandMock, result) =>
             {
                 commandMock.Setup(x => x.ExecuteScalarAsync(It.IsAny<CancellationToken>())).ReturnsAsync(result);
             });
