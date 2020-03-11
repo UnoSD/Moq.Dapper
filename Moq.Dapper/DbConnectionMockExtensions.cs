@@ -23,8 +23,6 @@ namespace Moq.Dapper
             {
                 case nameof(SqlMapper.QueryAsync):
                     return SetupQueryAsync<TResult>(mock);
-                case nameof(SqlMapper.ExecuteAsync) when typeof(TResult) == typeof(int):
-                    return (ISetup<DbConnection, Task<TResult>>)SetupExecuteAsync(mock);
                 case nameof(SqlMapper.ExecuteScalarAsync):
                     return SetupExecuteScalarAsync<TResult>(mock);
                 default:
