@@ -49,10 +49,11 @@ namespace Moq.Dapper
             return setupMock.Object;
         }
 
-        internal static ISetup<IDbConnection, TResult> SetupCommand<TResult>(Mock<IDbConnection> mock, Action<Mock<IDbCommand>, Func<TResult>> mockResult)
+        internal static ISetup<TDbConnection, TResult> SetupCommand<TResult, TDbConnection>(Mock<TDbConnection> mock, Action<Mock<IDbCommand>, Func<TResult>> mockResult)
+            where TDbConnection : class, IDbConnection
         {
-            var setupMock = new Mock<ISetup<IDbConnection, TResult>>();
-            var returnsMock = new Mock<IReturnsResult<IDbConnection>>();
+            var setupMock = new Mock<ISetup<TDbConnection, TResult>>();
+            var returnsMock = new Mock<IReturnsResult<TDbConnection>>();
 
             Func<TResult> getResult = null;
             Action callback = null;
