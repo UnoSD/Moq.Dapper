@@ -22,9 +22,6 @@ namespace Moq.Dapper
 
             switch (call.Method.Name)
             {
-                case nameof(SqlMapper.Execute):
-                    return (ISetup<IDbConnection, TResult>)SetupExecute(mock);
-
                 case nameof(SqlMapper.ExecuteScalar):
                     return SetupExecuteScalar<TResult>(mock);
 
@@ -34,6 +31,22 @@ namespace Moq.Dapper
 
                 default:
                     throw new NotSupportedException();
+            }
+        }
+
+        public static ISetup<IDbConnection, int> SetupDapper(this Mock<IDbConnection> mock, Expression<Func<IDbConnection, int>> expression)
+        {
+            var call = expression.Body as MethodCallExpression;
+
+            if (call?.Method.DeclaringType != typeof(SqlMapper))
+                throw new ArgumentException("Not a Dapper method.");
+
+            switch (call.Method.Name)
+            {
+                case nameof(SqlMapper.Execute):
+                    return SetupExecute(mock);
+                default:
+                    return SetupDapper<int>(mock, expression);
             }
         }
 
