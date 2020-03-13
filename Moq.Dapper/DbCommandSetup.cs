@@ -48,5 +48,45 @@ namespace Moq.Dapper
 
             return setupMock.Object;
         }
+
+        internal static ISetup<IDbConnection, TResult> SetupCommand<TResult>(Mock<IDbConnection> mock, Action<Mock<IDbCommand>, Func<TResult>> mockResult)
+        {
+            var setupMock = new Mock<ISetup<IDbConnection, TResult>>();
+            var returnsMock = new Mock<IReturnsResult<IDbConnection>>();
+
+            Func<TResult> getResult = null;
+            Action callback = null;
+
+            setupMock.Setup(setup => setup.Returns(It.IsAny<Func<TResult>>()))
+                     .Returns(returnsMock.Object)
+                     .Callback<Func<TResult>>(r => getResult = r);
+
+            setupMock.Setup(setup => setup.Returns(It.IsAny<TResult>()))
+                     .Returns(returnsMock.Object)
+                     .Callback<TResult>(r => getResult = () => r);
+
+            returnsMock.Setup(rm => rm.Callback(It.IsAny<Action>()))
+                       .Callback<Action>(a => callback = a);
+
+            var commandMock = new Mock<IDbCommand>();
+
+            commandMock.SetupGet(a => a.Parameters)
+                       .Returns(new Mock<IDataParameterCollection>().Object);
+
+            commandMock.Setup(a => a.CreateParameter())
+                       .Returns(new Mock<IDbDataParameter>().Object);
+
+            mockResult(commandMock, () =>
+            {
+                var result = getResult();
+                callback?.Invoke();
+                return result;
+            });
+
+            mock.Setup(connection => connection.CreateCommand())
+                .Returns(commandMock.Object);
+
+            return setupMock.Object;
+        }
     }
 }

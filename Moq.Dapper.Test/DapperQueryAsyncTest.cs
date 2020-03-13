@@ -14,7 +14,7 @@ namespace Moq.Dapper.Test
         [Test]
         public void QueryAsyncGeneric()
         {
-            var connection = new Mock<DbConnection>();
+            var connection = new Mock<IDbConnection>();
 
             var expected = new[] { 7, 77, 777 };
 
@@ -46,7 +46,7 @@ namespace Moq.Dapper.Test
         [Test]
         public void QueryAsyncGenericComplexType()
         {
-            var connection = new Mock<DbConnection>();
+            var connection = new Mock<IDbConnection>();
 
             var expected = new[]
             {

@@ -11,7 +11,7 @@ namespace Moq.Dapper.Test
         [Test]
         public void ExecuteScalarAsyncGeneric()
         {
-            var connection = new Mock<DbConnection>();
+            var connection = new Mock<IDbConnection>();
 
             const string expected = "Hello";
 
@@ -29,7 +29,7 @@ namespace Moq.Dapper.Test
         [Test]
         public void ExecuteScalarAsyncGenericWithSpecificType()
         {
-            var connection = new Mock<DbConnection>();
+            var connection = new Mock<IDbConnection>();
 
             const string expected = "Hello";
 
@@ -47,7 +47,7 @@ namespace Moq.Dapper.Test
         [Test]
         public void ExecuteScalarAsyncGenericWithParameters()
         {
-            var connection = new Mock<DbConnection>();
+            var connection = new Mock<IDbConnection>();
             
             const int expected = 1;
 
@@ -56,6 +56,24 @@ namespace Moq.Dapper.Test
 
             var actual = connection.Object
                                    .ExecuteScalarAsync<object>("", new { id = 1 })
+                                   .GetAwaiter()
+                                   .GetResult();
+
+            Assert.That(actual, Is.EqualTo(expected));
+        }
+
+        [Test]
+        public void ExecuteScalarAsyncGenericWithSpecificTypesWithParameters()
+        {
+            var connection = new Mock<IDbConnection>();
+
+            const double expected = System.Math.PI;
+
+            connection.SetupDapperAsync(c => c.ExecuteScalarAsync<double>(It.IsAny<string>(), null, null, null, null))
+                      .ReturnsAsync(expected);
+
+            var actual = connection.Object
+                                   .ExecuteScalarAsync<double>("", new { id = 1 })
                                    .GetAwaiter()
                                    .GetResult();
 
