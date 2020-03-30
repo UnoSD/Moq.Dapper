@@ -60,7 +60,8 @@ namespace Moq.Dapper.Test
                     DateTimeProperty = new DateTime(2000, 1, 1),
                     NullableDateTimeProperty = new DateTime(2000, 1, 1),
                     NullableIntegerProperty = 9,
-                    ByteArrayPropery = new byte[] { 7 }
+                    ByteArrayPropery = new byte[] { 7 },
+                    EnumProperty = ComplexType.EnumType.First
                 },
                 new ComplexType
                 {
@@ -72,7 +73,8 @@ namespace Moq.Dapper.Test
                     DateTimeProperty = new DateTime(2000, 1, 2),
                     NullableDateTimeProperty = new DateTime(2000, 1, 2),
                     NullableIntegerProperty = 99,
-                    ByteArrayPropery = new byte[] { 7, 7 }
+                    ByteArrayPropery = new byte[] { 7, 7 },
+                    EnumProperty = ComplexType.EnumType.Second
                 },
                 new ComplexType
                 {
@@ -84,7 +86,8 @@ namespace Moq.Dapper.Test
                     DateTimeProperty = new DateTime(2000, 1, 3),
                     NullableDateTimeProperty = null,
                     NullableIntegerProperty = null,
-                    ByteArrayPropery = new byte[] { 7, 7, 7 }
+                    ByteArrayPropery = new byte[] { 7, 7, 7 },
+                    EnumProperty = ComplexType.EnumType.Third
                 }
             };
 
@@ -117,6 +120,12 @@ namespace Moq.Dapper.Test
 
         public class ComplexType
         {
+            public enum EnumType
+            {
+                First,
+                Second,
+                Third
+            }
             public BigInteger BigIntegerProperty { get; set; }
             public long LongProperty { get; set; }
             public int IntegerProperty { get; set; }
@@ -126,6 +135,7 @@ namespace Moq.Dapper.Test
             public DateTime? NullableDateTimeProperty { get; set; }
             public int? NullableIntegerProperty { get; set; }
             public byte[] ByteArrayPropery { get; set; }
+            public EnumType EnumProperty { get; set; }
         }
     }
 }

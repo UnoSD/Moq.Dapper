@@ -32,6 +32,7 @@ namespace Moq.Dapper
 
                 bool IsMatchingType(Type t) =>
                     t.IsPrimitive ||
+                    t.IsEnum ||
                     t == typeof(DateTime) ||
                     t == typeof(DateTimeOffset) ||
                     t == typeof(decimal) ||
