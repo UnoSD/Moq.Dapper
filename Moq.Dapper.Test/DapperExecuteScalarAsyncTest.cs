@@ -81,7 +81,7 @@ namespace Moq.Dapper.Test
         }
 
         [Test]
-        public void ExecuteScalarAsyncGenericWithSpecificTypesWithParameters_UseDbConnection()
+        public void ExecuteScalarAsyncGenericWithSpecificTypesWithParametersDbConnection()
         {
             var connection = new Mock<DbConnection>();
 
