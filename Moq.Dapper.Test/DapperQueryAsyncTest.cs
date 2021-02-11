@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Linq;
 using System.Numerics;
+using System.Threading.Tasks;
 using Dapper;
 using NUnit.Framework;
 
@@ -42,7 +44,127 @@ namespace Moq.Dapper.Test
             Assert.That(actual.Count, Is.EqualTo(expected.Length));
             Assert.That(actual, Is.EquivalentTo(expected));
         }
-        
+
+        [Test]
+        public void QuerySingleAsyncGeneric()
+        {
+            var connection = new Mock<DbConnection>();
+
+            var expected = 7;
+
+            connection.SetupDapperAsync(c => c.QuerySingleAsync<int>(It.IsAny<string>(), null, null, null, null))
+                      .ReturnsAsync(expected);
+
+            var actual = connection.Object.QuerySingleAsync<int>("").GetAwaiter().GetResult();
+
+            Assert.AreEqual(actual, expected);
+        }
+
+        [Test]
+        public void QuerySingleAsyncGenericUsingDbConnectionInterface()
+        {
+            var connection = new Mock<IDbConnection>();
+
+            var expected = 7;
+
+            connection.SetupDapperAsync(c => c.QuerySingleAsync<int>(It.IsAny<string>(), null, null, null, null))
+                      .ReturnsAsync(expected);
+
+            var actual = connection.Object.QuerySingleAsync<int>("").GetAwaiter().GetResult();
+
+            Assert.AreEqual(actual, expected);
+        }
+
+        [Test]
+        public void QuerySingleOrDefaultAsyncGeneric()
+        {
+            var connection = new Mock<DbConnection>();
+
+            var expected = 7;
+
+            connection.SetupDapperAsync(c => c.QuerySingleOrDefaultAsync<int>(It.IsAny<string>(), null, null, null, null))
+                      .ReturnsAsync(expected);
+
+            var actual = connection.Object.QuerySingleOrDefaultAsync<int>("").GetAwaiter().GetResult();
+
+            Assert.AreEqual(actual, expected);
+        }
+
+        [Test]
+        public void QuerySingleOrDefaultAsyncGenericUsingDbConnectionInterface()
+        {
+            var connection = new Mock<IDbConnection>();
+
+            var expected = 7;
+
+            connection.SetupDapperAsync(c => c.QuerySingleOrDefaultAsync<int>(It.IsAny<string>(), null, null, null, null))
+                      .ReturnsAsync(expected);
+
+            var actual = connection.Object.QuerySingleOrDefaultAsync<int>("").GetAwaiter().GetResult();
+
+            Assert.AreEqual(actual, expected);
+        }
+
+        [Test]
+        public void QueryFirstAsyncGeneric()
+        {
+            var connection = new Mock<DbConnection>();
+
+            var expected = 7;
+
+            connection.SetupDapperAsync(c => c.QueryFirstAsync<int>(It.IsAny<string>(), null, null, null, null))
+                      .ReturnsAsync(expected);
+
+            var actual = connection.Object.QueryFirstAsync<int>("").GetAwaiter().GetResult();
+
+            Assert.AreEqual(actual, expected);
+        }
+
+        [Test]
+        public void QueryFirstAsyncGenericUsingDbConnectionInterface()
+        {
+            var connection = new Mock<DbConnection>();
+
+            var expected = 7;
+
+            connection.SetupDapperAsync(c => c.QueryFirstAsync<int>(It.IsAny<string>(), null, null, null, null))
+                      .ReturnsAsync(expected);
+
+            var actual = connection.Object.QueryFirstAsync<int>("").GetAwaiter().GetResult();
+
+            Assert.AreEqual(actual, expected);
+        }
+
+        [Test]
+        public void QueryFirstOrDefaultAsyncGeneric()
+        {
+            var connection = new Mock<DbConnection>();
+
+            var expected = 7;
+
+            connection.SetupDapperAsync(c => c.QueryFirstOrDefaultAsync<int>(It.IsAny<string>(), null, null, null, null))
+                      .ReturnsAsync(expected);
+
+            var actual = connection.Object.QueryFirstOrDefaultAsync<int>("").GetAwaiter().GetResult();
+
+            Assert.AreEqual(actual, expected);
+        }
+
+        [Test]
+        public void QueryFirstOrDefaultAsyncGenericUsingDbConnectionInterface()
+        {
+            var connection = new Mock<DbConnection>();
+
+            var expected = 7;
+
+            connection.SetupDapperAsync(c => c.QueryFirstOrDefaultAsync<int>(It.IsAny<string>(), null, null, null, null))
+                      .ReturnsAsync(expected);
+
+            var actual = connection.Object.QueryFirstOrDefaultAsync<int>("").GetAwaiter().GetResult();
+
+            Assert.AreEqual(actual, expected);
+        }
+
         [Test]
         public void QueryAsyncGenericComplexType()
         {

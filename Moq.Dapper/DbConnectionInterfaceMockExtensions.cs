@@ -28,7 +28,10 @@ namespace Moq.Dapper
                     return SetupExecuteScalar<TResult>(mock);
 
                 case nameof(SqlMapper.Query):
+                case nameof(SqlMapper.QueryFirst):
                 case nameof(SqlMapper.QueryFirstOrDefault):
+                case nameof(SqlMapper.QuerySingle):
+                case nameof(SqlMapper.QuerySingleOrDefault):
                     return SetupQuery<TResult>(mock);
 
                 default:
@@ -46,6 +49,10 @@ namespace Moq.Dapper
             switch (call.Method.Name)
             {
                 case nameof(SqlMapper.QueryAsync):
+                case nameof(SqlMapper.QueryFirstAsync):
+                case nameof(SqlMapper.QueryFirstOrDefaultAsync):
+                case nameof(SqlMapper.QuerySingleAsync):
+                case nameof(SqlMapper.QuerySingleOrDefaultAsync):
                     return SetupQueryAsync<TResult>(mock);
                 
                 default:
@@ -58,7 +65,8 @@ namespace Moq.Dapper
             {
                 commandMock.Protected()
                            .Setup<Task<DbDataReader>>("ExecuteDbDataReaderAsync", ItExpr.IsAny<CommandBehavior>(), ItExpr.IsAny<CancellationToken>())
-                           .ReturnsAsync(() => DbDataReaderFactory.DbDataReader(result));
+                           .ReturnsAsync(() => result().ToDataTable(typeof(TResult))
+                                                       .ToDataTableReader());
             });
 
         static ISetup<IDbConnection, TResult> SetupQuery<TResult>(Mock<IDbConnection> mock) =>

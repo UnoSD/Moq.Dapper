@@ -2,6 +2,7 @@
 using System.Data;
 using System.Linq;
 using System.Numerics;
+using System.Security.Cryptography;
 using Dapper;
 using NUnit.Framework;
 
@@ -10,21 +11,6 @@ namespace Moq.Dapper.Test
     [TestFixture]
     public class DapperQueryTest
     {
-        [Test]
-        public void QueryFirstOrDefault()
-        {
-            var connection = new Mock<IDbConnection>();
-
-            const int expected = 7;
-
-            connection.SetupDapper(c => c.QueryFirstOrDefault<int>(It.IsAny<string>(), null, null, null, null))
-                      .Returns(expected);
-
-            var actual = connection.Object.QueryFirstOrDefault<int>("");
-
-            Assert.That(actual, Is.EqualTo(expected));
-        }
-
         [Test]
         public void QueryGeneric()
         {
@@ -39,6 +25,66 @@ namespace Moq.Dapper.Test
 
             Assert.That(actual.Count, Is.EqualTo(expected.Length));
             Assert.That(actual, Is.EquivalentTo(expected));
+        }
+
+        [Test]
+        public void QuerySingle()
+        {
+            var connection = new Mock<IDbConnection>();
+
+            const int expected = 7;
+
+            connection.SetupDapper(c => c.QuerySingle<int>(It.IsAny<string>(), null, null, null, null))
+                      .Returns(expected);
+
+            var actual = connection.Object.QuerySingle<int>("");
+
+            Assert.That(actual, Is.EqualTo(expected));
+        }
+
+        [Test]
+        public void QuerySingleOrDefault()
+        {
+            var connection = new Mock<IDbConnection>();
+
+            const int expected = 7;
+
+            connection.SetupDapper(c => c.QuerySingleOrDefault<int>(It.IsAny<string>(), null, null, null, null))
+                      .Returns(expected);
+
+            var actual = connection.Object.QuerySingleOrDefault<int>("");
+
+            Assert.That(actual, Is.EqualTo(expected));
+        }
+
+        [Test]
+        public void QueryFirst()
+        {
+            var connection = new Mock<IDbConnection>();
+
+            const int expected = 7;
+
+            connection.SetupDapper(c => c.QueryFirst<int>(It.IsAny<string>(), null, null, null, null))
+                      .Returns(expected);
+
+            var actual = connection.Object.QueryFirst<int>("");
+
+            Assert.That(actual, Is.EqualTo(expected));
+        }
+
+        [Test]
+        public void QueryFirstOrDefault()
+        {
+            var connection = new Mock<IDbConnection>();
+
+            const int expected = 7;
+
+            connection.SetupDapper(c => c.QueryFirstOrDefault<int>(It.IsAny<string>(), null, null, null, null))
+                      .Returns(expected);
+
+            var actual = connection.Object.QueryFirstOrDefault<int>("");
+
+            Assert.That(actual, Is.EqualTo(expected));
         }
 
         [Test]

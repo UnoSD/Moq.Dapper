@@ -22,6 +22,10 @@ namespace Moq.Dapper
             switch (call.Method.Name)
             {
                 case nameof(SqlMapper.QueryAsync):
+                case nameof(SqlMapper.QueryFirstAsync):
+                case nameof(SqlMapper.QueryFirstOrDefaultAsync):
+                case nameof(SqlMapper.QuerySingleAsync):
+                case nameof(SqlMapper.QuerySingleOrDefaultAsync):
                     return SetupQueryAsync<TResult>(mock);
                 case nameof(SqlMapper.ExecuteAsync) when typeof(TResult) == typeof(int):
                     return (ISetup<DbConnection, Task<TResult>>)SetupExecuteAsync(mock);
@@ -37,7 +41,8 @@ namespace Moq.Dapper
             {
                 commandMock.Protected()
                            .Setup<Task<DbDataReader>>("ExecuteDbDataReaderAsync", ItExpr.IsAny<CommandBehavior>(), ItExpr.IsAny<CancellationToken>())
-                           .ReturnsAsync(() => DbDataReaderFactory.DbDataReader(result));
+                           .ReturnsAsync(() => result().ToDataTable(typeof(TResult))
+                                                                  .ToDataTableReader());
             });
 
         static ISetup<DbConnection, Task<int>> SetupExecuteAsync(Mock<DbConnection> mock) =>
