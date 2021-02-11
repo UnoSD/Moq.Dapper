@@ -9,7 +9,7 @@ namespace Moq.Dapper.Test
     public class DapperExecuteAsyncTest
     {
         [Test]
-        public void ExecuteAsync_UseDbConnection()
+        public void ExecuteAsyncDbConnection()
         {
             var connection = new Mock<DbConnection>();
 
@@ -25,7 +25,7 @@ namespace Moq.Dapper.Test
         }
 
         [Test]
-        public void ExecuteAsync_UseIDbConnection()
+        public void ExecuteAsyncIDbConnection()
         {
             var connection = new Mock<IDbConnection>();
 
