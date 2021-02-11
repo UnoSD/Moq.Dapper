@@ -1,3 +1,4 @@
+using System.Data;
 using System.Data.Common;
 using Dapper;
 using NUnit.Framework;
@@ -19,6 +20,24 @@ namespace Moq.Dapper.Test
 
             var actual = connection.Object
                                    .ExecuteScalarAsync<object>("")
+                                   .GetAwaiter()
+                                   .GetResult();
+
+            Assert.That(actual, Is.EqualTo(expected));
+        }
+
+        [Test]
+        public void ExecuteScalarAsyncGenericWithSpecificType()
+        {
+            var connection = new Mock<DbConnection>();
+
+            const string expected = "Hello";
+
+            connection.SetupDapperAsync(c => c.ExecuteScalarAsync<string>(It.IsAny<string>(), null, null, null, null))
+                      .ReturnsAsync(expected);
+
+            var actual = connection.Object
+                                   .ExecuteScalarAsync<string>("")
                                    .GetAwaiter()
                                    .GetResult();
 
