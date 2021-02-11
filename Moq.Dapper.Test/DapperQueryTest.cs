@@ -130,6 +130,6 @@ namespace Moq.Dapper.Test
             public int? NullableIntegerProperty { get; set; }
             public byte[] ByteArrayPropery { get; set; }
             public EnumType EnumProperty { get; set; }
-        }   
+        }
     }
 }
