@@ -104,7 +104,8 @@ namespace Moq.Dapper.Test
                     DateTimeProperty = new DateTime(2000, 1, 1),
                     NullableDateTimeProperty = new DateTime(2000, 1, 1),
                     NullableIntegerProperty = 9,
-                    ByteArrayPropery = new byte[] { 1, 2, 4, 8 }
+                    ByteArrayPropery = new byte[] { 1, 2, 4, 8 },
+                    EnumProperty = ComplexType.EnumType.First
                 },
                 new ComplexType
                 {
@@ -116,7 +117,8 @@ namespace Moq.Dapper.Test
                     DateTimeProperty = new DateTime(2000, 1, 2),
                     NullableDateTimeProperty = new DateTime(2000, 1, 2),
                     NullableIntegerProperty = 99,
-                    ByteArrayPropery = new byte[] { 1, 3, 5, 7 }
+                    ByteArrayPropery = new byte[] { 1, 3, 5, 7 },
+                    EnumProperty = ComplexType.EnumType.Second
                 },
                 new ComplexType
                 {
@@ -127,7 +129,8 @@ namespace Moq.Dapper.Test
                     GuidProperty = Guid.Parse("712B6DA1-71D8-4D60-8FEF-3F4800A6B04F"),
                     DateTimeProperty = new DateTime(2000, 1, 3),
                     NullableDateTimeProperty = null,
-                    NullableIntegerProperty = null
+                    NullableIntegerProperty = null,
+                    EnumProperty = ComplexType.EnumType.Third
                 }
             };
 
@@ -148,7 +151,8 @@ namespace Moq.Dapper.Test
                                                co.DateTimeProperty == complexObject.DateTimeProperty &&
                                                co.NullableIntegerProperty == complexObject.NullableIntegerProperty &&
                                                co.NullableDateTimeProperty == complexObject.NullableDateTimeProperty &&
-                                               co.ByteArrayPropery == complexObject.ByteArrayPropery);
+                                               co.ByteArrayPropery == complexObject.ByteArrayPropery &&
+                                               co.EnumProperty == complexObject.EnumProperty);
 
                 Assert.That(match.Count, Is.EqualTo(1));
             }
@@ -156,6 +160,12 @@ namespace Moq.Dapper.Test
 
         public class ComplexType
         {
+            public enum EnumType
+            {
+                First,
+                Second,
+                Third
+            }
             public int IntegerProperty { get; set; }
             public long LongProperty { get; set; }
             public BigInteger BigIntegerProperty { get; set; }
@@ -165,6 +175,7 @@ namespace Moq.Dapper.Test
             public DateTime? NullableDateTimeProperty { get; set; }
             public int? NullableIntegerProperty { get; set; }
             public byte[] ByteArrayPropery { get; set; }
+            public EnumType EnumProperty { get; set; }
         }
     }
 }
