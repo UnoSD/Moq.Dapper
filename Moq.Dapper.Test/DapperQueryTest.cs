@@ -57,6 +57,8 @@ namespace Moq.Dapper.Test
             Assert.That(actual, Is.EqualTo(expected));
         }
 
+
+
         [Test]
         public void QueryFirst()
         {
@@ -156,6 +158,46 @@ namespace Moq.Dapper.Test
 
                 Assert.That(match.Count, Is.EqualTo(1));
             }
+        }
+
+        [Test]
+        public void QuerySingleOrDefaultWithComplexType()
+        {
+            var connection = new Mock<IDbConnection>();
+
+            var expected = new ComplexType
+            {
+                StringProperty = "String1",
+                IntegerProperty = 7,
+                LongProperty = 70,
+                BigIntegerProperty = 700,
+                GuidProperty = Guid.Parse("CF01F32D-A55B-4C4A-9B33-AAC1C20A85BB"),
+                DateTimeProperty = new DateTime(2000, 1, 1),
+                NullableDateTimeProperty = new DateTime(2000, 1, 1),
+                NullableIntegerProperty = 9,
+                ByteArrayPropery = new byte[] { 1, 2, 4, 8 },
+                EnumProperty = ComplexType.EnumType.First
+            };
+
+            connection.SetupDapper(c => c.QuerySingleOrDefault<ComplexType>(It.IsAny<string>(), null, null, null, null))
+                      .Returns(expected);
+
+            var actual = connection.Object.QuerySingleOrDefault<ComplexType>("");
+
+            Assert.That(actual.StringProperty, Is.EqualTo(expected.StringProperty));
+        }
+
+        [Test]
+        public void QuerySingleOrDefaultWithComplexTypeAsNull()
+        {
+            var connection = new Mock<IDbConnection>();
+
+            connection.SetupDapper(c => c.QuerySingleOrDefault<ComplexType>(It.IsAny<string>(), null, null, null, null))
+                      .Returns((ComplexType)null);
+
+            var actual = connection.Object.QuerySingleOrDefault<ComplexType>("");
+
+            Assert.That(actual, Is.Null);
         }
 
         public class ComplexType
