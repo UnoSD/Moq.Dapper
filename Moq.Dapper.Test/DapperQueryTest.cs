@@ -240,6 +240,32 @@ namespace Moq.Dapper.Test
             Assert.That(actual, Is.Null);
         }
 
+        [Test]
+        public void QuerySingleOrDefaultString()
+        {
+            var connection = new Mock<IDbConnection>();
+
+            connection.SetupDapper(c => c.QueryFirstOrDefault<string>(It.IsAny<string>(), null, null, null, null))
+                      .Returns((string)null);
+
+            var actual = connection.Object.QueryFirstOrDefault<string>("");
+
+            Assert.That(actual, Is.Null);
+        }
+
+        [Test]
+        public void QueryFirstOrDefaultString()
+        {
+            var connection = new Mock<IDbConnection>();
+
+            connection.SetupDapper(c => c.QueryFirstOrDefault<string>(It.IsAny<string>(), null, null, null, null))
+                      .Returns((string)null);
+
+            var actual = connection.Object.QueryFirstOrDefault<string>("");
+
+            Assert.That(actual, Is.Null);
+        }
+
         public class ComplexType
         {
             public enum EnumType

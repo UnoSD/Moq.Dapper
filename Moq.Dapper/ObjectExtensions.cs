@@ -13,6 +13,8 @@ namespace Moq.Dapper
             {
                 case null:
                     return Array.CreateInstance(resultType, 0).ToDataTable(resultType);
+                case string resultString: // this needs to come before IEnumerable bccause strings are IEnumerable<char>
+                    return new[] { resultString }.ToDataTable(resultType);
                 case IEnumerable results:
                     return results.ToDataTable(resultType.GenericTypeArguments.Single());
                 default:

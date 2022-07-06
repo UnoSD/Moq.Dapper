@@ -241,7 +241,7 @@ namespace Moq.Dapper.Test
         }
 
         [Test]
-        public void QuerySingleOrDefaultWithComplexType()
+        public void QuerySingleOrDefaultAsyncWithComplexType()
         {
             var connection = new Mock<IDbConnection>();
 
@@ -270,7 +270,7 @@ namespace Moq.Dapper.Test
         }
 
         [Test]
-        public void QuerySingleOrDefaultWithComplexTypeAsNull()
+        public void QuerySingleOrDefaultAsyncWithComplexTypeAsNull()
         {
             var connection = new Mock<IDbConnection>();
 
@@ -285,7 +285,7 @@ namespace Moq.Dapper.Test
         }
 
         [Test]
-        public void QueryFirstOrDefaultWithComplexType()
+        public void QueryFirstOrDefaultAsyncWithComplexType()
         {
             var connection = new Mock<IDbConnection>();
 
@@ -314,7 +314,7 @@ namespace Moq.Dapper.Test
         }
 
         [Test]
-        public void QueryFirstOrDefaultWithComplexTypeAsNull()
+        public void QueryFirstOrDefaultAsyncWithComplexTypeAsNull()
         {
             var connection = new Mock<IDbConnection>();
 
@@ -322,6 +322,36 @@ namespace Moq.Dapper.Test
                       .ReturnsAsync((ComplexType)null);
 
             var actual = connection.Object.QueryFirstOrDefaultAsync<ComplexType>("")
+                                          .GetAwaiter()
+                                          .GetResult();
+
+            Assert.That(actual, Is.Null);
+        }
+
+        [Test]
+        public void QuerySingleOrDefaultAsyncString()
+        {
+            var connection = new Mock<IDbConnection>();
+
+            connection.SetupDapperAsync(c => c.QueryFirstOrDefaultAsync<string>(It.IsAny<string>(), null, null, null, null))
+                      .ReturnsAsync((string)null);
+
+            var actual = connection.Object.QueryFirstOrDefaultAsync<string>("")
+                                          .GetAwaiter()
+                                          .GetResult();
+
+            Assert.That(actual, Is.Null);
+        }
+
+        [Test]
+        public void QueryFirstOrDefaultAsyncString()
+        {
+            var connection = new Mock<IDbConnection>();
+
+            connection.SetupDapperAsync(c => c.QueryFirstOrDefaultAsync<string>(It.IsAny<string>(), null, null, null, null))
+                      .ReturnsAsync((string)null);
+
+            var actual = connection.Object.QueryFirstOrDefaultAsync<string>("")
                                           .GetAwaiter()
                                           .GetResult();
 
