@@ -240,6 +240,94 @@ namespace Moq.Dapper.Test
             }
         }
 
+        [Test]
+        public void QuerySingleOrDefaultWithComplexType()
+        {
+            var connection = new Mock<IDbConnection>();
+
+            var expected = new ComplexType
+            {
+                StringProperty = "String1",
+                IntegerProperty = 7,
+                LongProperty = 70,
+                BigIntegerProperty = 700,
+                GuidProperty = Guid.Parse("CF01F32D-A55B-4C4A-9B33-AAC1C20A85BB"),
+                DateTimeProperty = new DateTime(2000, 1, 1),
+                NullableDateTimeProperty = new DateTime(2000, 1, 1),
+                NullableIntegerProperty = 9,
+                ByteArrayPropery = new byte[] { 1, 2, 4, 8 },
+                EnumProperty = ComplexType.EnumType.First
+            };
+
+            connection.SetupDapperAsync(c => c.QuerySingleOrDefaultAsync<ComplexType>(It.IsAny<string>(), null, null, null, null))
+                      .ReturnsAsync(expected);
+
+            var actual = connection.Object.QuerySingleOrDefaultAsync<ComplexType>("")
+                                          .GetAwaiter()
+                                          .GetResult();
+
+            Assert.That(actual.StringProperty, Is.EqualTo(expected.StringProperty));
+        }
+
+        [Test]
+        public void QuerySingleOrDefaultWithComplexTypeAsNull()
+        {
+            var connection = new Mock<IDbConnection>();
+
+            connection.SetupDapperAsync(c => c.QuerySingleOrDefaultAsync<ComplexType>(It.IsAny<string>(), null, null, null, null))
+                      .ReturnsAsync((ComplexType)null);
+
+            var actual = connection.Object.QuerySingleOrDefaultAsync<ComplexType>("")
+                                          .GetAwaiter()
+                                          .GetResult();
+
+            Assert.That(actual, Is.Null);
+        }
+
+        [Test]
+        public void QueryFirstOrDefaultWithComplexType()
+        {
+            var connection = new Mock<IDbConnection>();
+
+            var expected = new ComplexType
+            {
+                StringProperty = "String1",
+                IntegerProperty = 7,
+                LongProperty = 70,
+                BigIntegerProperty = 700,
+                GuidProperty = Guid.Parse("CF01F32D-A55B-4C4A-9B33-AAC1C20A85BB"),
+                DateTimeProperty = new DateTime(2000, 1, 1),
+                NullableDateTimeProperty = new DateTime(2000, 1, 1),
+                NullableIntegerProperty = 9,
+                ByteArrayPropery = new byte[] { 1, 2, 4, 8 },
+                EnumProperty = ComplexType.EnumType.First
+            };
+
+            connection.SetupDapperAsync(c => c.QueryFirstOrDefaultAsync<ComplexType>(It.IsAny<string>(), null, null, null, null))
+                      .ReturnsAsync(expected);
+
+            var actual = connection.Object.QueryFirstOrDefaultAsync<ComplexType>("")
+                                          .GetAwaiter()
+                                          .GetResult();
+
+            Assert.That(actual.StringProperty, Is.EqualTo(expected.StringProperty));
+        }
+
+        [Test]
+        public void QueryFirstOrDefaultWithComplexTypeAsNull()
+        {
+            var connection = new Mock<IDbConnection>();
+
+            connection.SetupDapperAsync(c => c.QueryFirstOrDefaultAsync<ComplexType>(It.IsAny<string>(), null, null, null, null))
+                      .ReturnsAsync((ComplexType)null);
+
+            var actual = connection.Object.QueryFirstOrDefaultAsync<ComplexType>("")
+                                          .GetAwaiter()
+                                          .GetResult();
+
+            Assert.That(actual, Is.Null);
+        }
+
         public class ComplexType
         {
             public enum EnumType
