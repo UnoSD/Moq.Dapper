@@ -7,19 +7,13 @@ namespace Moq.Dapper
 {
     static class ObjectExtensions
     {
-        internal static DataTable ToDataTable(this object result, Type resultType)
-        {
-            switch (result)
+        internal static DataTable ToDataTable(this object result, Type resultType) =>
+            result switch
             {
-                case null:
-                    return Array.CreateInstance(resultType, 0).ToDataTable(resultType);
-                case string resultString: // this needs to come before IEnumerable because strings are IEnumerable<char>
-                    return new[] { resultString }.ToDataTable(resultType);
-                case IEnumerable results:
-                    return results.ToDataTable(resultType.GenericTypeArguments.Single());
-                default:
-                    return new[] { result }.ToDataTable(resultType);
-            }
-        }
+                null                => Array.CreateInstance(resultType, 0).ToDataTable(resultType),
+                string resultString => new[] { resultString }.ToDataTable(resultType),
+                IEnumerable results => results.ToDataTable(resultType.GenericTypeArguments.Single()),
+                _                   => new[] { result }.ToDataTable(resultType)
+            };
     }
 }
