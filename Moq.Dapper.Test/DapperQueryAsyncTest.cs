@@ -229,11 +229,11 @@ namespace Moq.Dapper.Test
                 }
             };
 
-            connection.SetupDapperAsync(c => c.QueryAsync<ComplexType>(It.IsAny<string>(), It.IsAny<object>(), null, null, null))
+            connection.SetupDapperAsync(c => c.QueryAsync<ComplexType>(It.IsAny<string>(), null, null, null, null))
                       .ReturnsAsync(expected);
 
             var actual = connection.Object
-                                   .QueryAsync<ComplexType>("", new DynamicParameters(new { age = 18 }))
+                                   .QueryAsync<ComplexType>("")
                                    .GetAwaiter()
                                    .GetResult()
                                    .ToList();
