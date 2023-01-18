@@ -1,4 +1,5 @@
-﻿using System.Data.Common;
+﻿using System.Data;
+using System.Data.Common;
 using Dapper;
 using NUnit.Framework;
 
@@ -20,6 +21,24 @@ namespace Moq.Dapper.Test
                                    .GetAwaiter()
                                    .GetResult();
 
+            Assert.That(result, Is.EqualTo(1));
+        }
+
+        [Test]
+        public void ExecuteAsyncWithDynamicParameters()
+        {
+            // arrange
+            var connection = new Mock<DbConnection>();
+            connection.SetupDapperAsync(c => c.ExecuteAsync(It.IsAny<string>(), It.IsAny<object>(), It.IsAny<IDbTransaction>(), It.IsAny<int?>(), It.IsAny<CommandType?>()))
+                .ReturnsAsync(1);
+
+            // act
+            var result = connection.Object
+                .ExecuteAsync("", new DynamicParameters(new { }))
+                .GetAwaiter()
+                .GetResult();
+
+            // assert
             Assert.That(result, Is.EqualTo(1));
         }
     }

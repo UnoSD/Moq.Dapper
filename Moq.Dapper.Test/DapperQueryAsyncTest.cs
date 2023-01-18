@@ -46,6 +46,22 @@ namespace Moq.Dapper.Test
         }
 
         [Test]
+        public void QueryAsyncGenericWithDynamicParameters()
+        {
+            // arrange
+            var connection = new Mock<DbConnection>();
+            var expected = new[] { 7, 77, 777 };
+            connection.SetupDapperAsync(c => c.QueryAsync<int>(It.IsAny<string>(), It.IsAny<object>(), It.IsAny<IDbTransaction>(), It.IsAny<int?>(), It.IsAny<CommandType?>()))
+                .ReturnsAsync(expected);
+
+            // act
+            var actual = connection.Object.QueryAsync<int>("", new DynamicParameters(new { })).GetAwaiter().GetResult();
+
+            // assert
+            Assert.AreEqual(expected, actual);
+        }
+
+        [Test]
         public void QuerySingleAsyncGeneric()
         {
             var connection = new Mock<DbConnection>();
@@ -213,11 +229,11 @@ namespace Moq.Dapper.Test
                 }
             };
 
-            connection.SetupDapperAsync(c => c.QueryAsync<ComplexType>(It.IsAny<string>(), null, null, null, null))
+            connection.SetupDapperAsync(c => c.QueryAsync<ComplexType>(It.IsAny<string>(), It.IsAny<object>(), null, null, null))
                       .ReturnsAsync(expected);
 
             var actual = connection.Object
-                                   .QueryAsync<ComplexType>("")
+                                   .QueryAsync<ComplexType>("", new DynamicParameters(new { age = 18 }))
                                    .GetAwaiter()
                                    .GetResult()
                                    .ToList();

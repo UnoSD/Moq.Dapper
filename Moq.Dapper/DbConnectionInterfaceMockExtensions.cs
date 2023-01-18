@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Data;
 using System.Data.Common;
 using System.Linq.Expressions;
@@ -98,8 +99,10 @@ namespace Moq.Dapper
 
             var commandMock = new Mock<IDbCommand>();
 
+            var parametersMock = new Mock<IDataParameterCollection>();
+            parametersMock.Setup(p => p.GetEnumerator()).Returns(new Mock<IEnumerator>().Object);
             commandMock.SetupGet(a => a.Parameters)
-                       .Returns(new Mock<IDataParameterCollection>().Object);
+                       .Returns(parametersMock.Object);
 
             commandMock.Setup(a => a.CreateParameter())
                        .Returns(new Mock<IDbDataParameter>().Object);
