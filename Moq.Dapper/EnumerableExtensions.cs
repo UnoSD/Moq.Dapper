@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Numerics;
@@ -18,6 +19,17 @@ namespace Moq.Dapper
 
                 foreach (var element in results)
                     dataTable.Rows.Add(element);
+            }
+            else if (tableType.IsValueTupleType())
+            {
+                var fields = tableType.GetFields();
+                var columns = fields.Select(x => new DataColumn(x.Name, x.FieldType)).ToArray();
+                dataTable.Columns.AddRange(columns);
+                var valuesFactory = fields.Select(info => (Func<object, object>)info.GetValue);
+                foreach (var element in results)
+                {
+                    dataTable.Rows.Add(valuesFactory.Select(getValue => getValue(element)).ToArray());
+                }
             }
             else
             {
@@ -64,5 +76,19 @@ namespace Moq.Dapper
 
             return dataTable;
         }
+
+        private static readonly HashSet<Type> ValueTupleTypes = new HashSet<Type>(new Type[]
+        {
+            typeof(ValueTuple<>),
+            typeof(ValueTuple<,>),
+            typeof(ValueTuple<,,>),
+            typeof(ValueTuple<,,,>),
+            typeof(ValueTuple<,,,,>),
+            typeof(ValueTuple<,,,,,>),
+            typeof(ValueTuple<,,,,,,>),
+            typeof(ValueTuple<,,,,,,,>)
+        });
+
+        private static bool IsValueTupleType(this Type type) => type.IsGenericType && ValueTupleTypes.Contains(type.GetGenericTypeDefinition());
     }
 }
