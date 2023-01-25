@@ -23,13 +23,16 @@ namespace Moq.Dapper
             else if (tableType.IsValueTupleType())
             {
                 var fields = tableType.GetFields();
+                
                 var columns = fields.Select(x => new DataColumn(x.Name, x.FieldType)).ToArray();
+                
                 dataTable.Columns.AddRange(columns);
-                var valuesFactory = fields.Select(info => (Func<object, object>)info.GetValue);
+                
+                var valuesFactory = 
+                    fields.Select(info => (Func<object, object>)info.GetValue).ToList();
+                
                 foreach (var element in results)
-                {
                     dataTable.Rows.Add(valuesFactory.Select(getValue => getValue(element)).ToArray());
-                }
             }
             else
             {
@@ -77,7 +80,7 @@ namespace Moq.Dapper
             return dataTable;
         }
 
-        private static readonly HashSet<Type> ValueTupleTypes = new HashSet<Type>(new Type[]
+        static readonly HashSet<Type> ValueTupleTypes = new(new[]
         {
             typeof(ValueTuple<>),
             typeof(ValueTuple<,>),
@@ -89,6 +92,11 @@ namespace Moq.Dapper
             typeof(ValueTuple<,,,,,,,>)
         });
 
-        private static bool IsValueTupleType(this Type type) => type.IsGenericType && ValueTupleTypes.Contains(type.GetGenericTypeDefinition());
+        static bool IsValueTupleType(this Type type)
+        {
+            var genericTypeDefinition = type.GetGenericTypeDefinition();
+            return type.IsGenericType &&
+                   ValueTupleTypes.Contains(genericTypeDefinition);
+        }
     }
 }

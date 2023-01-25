@@ -48,16 +48,15 @@ namespace Moq.Dapper.Test
         [Test]
         public void QueryAsyncValueTuple()
         {
-            // arrange
             var connection = new Mock<DbConnection>();
+            
             var expected = new List<(int, string)> { (123, "Jack") };
+            
             connection.SetupDapperAsync(c => c.QueryAsync<(int, string)>(It.IsAny<string>(), It.IsAny<object>(), It.IsAny<IDbTransaction>(), It.IsAny<int?>(), It.IsAny<CommandType?>()))
-                .ReturnsAsync(expected);
+                      .ReturnsAsync(expected);
 
-            // act
-            var actual = connection.Object.QueryAsync<(int, string)>("select id, name from users;").GetAwaiter().GetResult();
+            var actual = connection.Object.QueryAsync<(int, string)>("").GetAwaiter().GetResult();
 
-            // assert
             Assert.AreEqual(expected, actual);
         }
 
