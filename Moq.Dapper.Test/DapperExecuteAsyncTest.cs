@@ -27,18 +27,16 @@ namespace Moq.Dapper.Test
         [Test]
         public void ExecuteAsyncWithDynamicParameters()
         {
-            // arrange
             var connection = new Mock<DbConnection>();
+
             connection.SetupDapperAsync(c => c.ExecuteAsync(It.IsAny<string>(), It.IsAny<object>(), It.IsAny<IDbTransaction>(), It.IsAny<int?>(), It.IsAny<CommandType?>()))
-                .ReturnsAsync(1);
+                      .ReturnsAsync(1);
 
-            // act
             var result = connection.Object
-                .ExecuteAsync("", new DynamicParameters(new { }))
-                .GetAwaiter()
-                .GetResult();
+                                   .ExecuteAsync("", new DynamicParameters(new { }))
+                                   .GetAwaiter()
+                                   .GetResult();
 
-            // assert
             Assert.That(result, Is.EqualTo(1));
         }
     }

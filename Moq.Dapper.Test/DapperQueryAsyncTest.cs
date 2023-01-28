@@ -48,17 +48,17 @@ namespace Moq.Dapper.Test
         [Test]
         public void QueryAsyncGenericWithDynamicParameters()
         {
-            // arrange
             var connection = new Mock<DbConnection>();
-            var expected = new[] { 7, 77, 777 };
-            connection.SetupDapperAsync(c => c.QueryAsync<int>(It.IsAny<string>(), It.IsAny<object>(), It.IsAny<IDbTransaction>(), It.IsAny<int?>(), It.IsAny<CommandType?>()))
-                .ReturnsAsync(expected);
 
-            // act
+            var expected = new[] { 7, 77, 777 };
+
+            connection.SetupDapperAsync(c => c.QueryAsync<int>(It.IsAny<string>(), It.IsAny<object>(), It.IsAny<IDbTransaction>(), It.IsAny<int?>(), It.IsAny<CommandType?>()))
+                      .ReturnsAsync(expected);
+
             var actual = connection.Object.QueryAsync<int>("", new DynamicParameters(new { })).GetAwaiter().GetResult();
 
-            // assert
-            Assert.AreEqual(expected, actual);
+            Assert.That(actual.Count, Is.EqualTo(expected.Length));
+            Assert.That(actual, Is.EquivalentTo(expected));
         }
 
         [Test]
