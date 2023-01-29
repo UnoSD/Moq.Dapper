@@ -28,6 +28,22 @@ namespace Moq.Dapper.Test
         }
 
         [Test]
+        public void QueryGenericWithDynamicParameters()
+        {
+            var connection = new Mock<IDbConnection>();
+
+            var expected = new[] { 7, 77, 777 };
+
+            connection.SetupDapper(c => c.Query<int>(It.IsAny<string>(), It.IsAny<object>(), It.IsAny<IDbTransaction>(), It.IsAny<bool>(), It.IsAny<int?>(), It.IsAny<CommandType?>()))
+                      .Returns(expected);
+
+            var actual = connection.Object.Query<int>("", new DynamicParameters(new { }));
+
+            Assert.That(actual.Count, Is.EqualTo(expected.Length));
+            Assert.That(actual, Is.EquivalentTo(expected));
+        }
+
+        [Test]
         public void QuerySingle()
         {
             var connection = new Mock<IDbConnection>();

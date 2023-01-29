@@ -61,5 +61,23 @@ namespace Moq.Dapper.Test
 
             Assert.That(actual, Is.EqualTo(expected));
         }
+
+        [Test]
+        public void ExecuteScalarAsyncGenericWithDynamicParameters()
+        {
+            var connection = new Mock<DbConnection>();
+
+            const int expected = 1;
+
+            connection.SetupDapperAsync(c => c.ExecuteScalarAsync(It.IsAny<string>(), It.IsAny<object>(), It.IsAny<IDbTransaction>(), It.IsAny<int?>(), It.IsAny<CommandType?>()))
+                      .ReturnsAsync(expected);
+
+            var actual = connection.Object
+                                   .ExecuteScalarAsync("", new DynamicParameters(new { id = 1 }))
+                                   .GetAwaiter()
+                                   .GetResult();
+
+            Assert.That(actual, Is.EqualTo(expected));
+        }
     }
 }

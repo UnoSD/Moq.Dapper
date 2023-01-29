@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Data;
 using System.Data.Common;
 using System.Threading.Tasks;
@@ -23,9 +24,12 @@ namespace Moq.Dapper
 
             commandMock.SetupAllProperties();
 
+            var parametersMock = new Mock<DbParameterCollection>();
+            parametersMock.Setup(x => x.GetEnumerator())
+                          .Returns(new Mock<IEnumerator>().Object);
             commandMock.Protected()
                        .SetupGet<DbParameterCollection>("DbParameterCollection")
-                       .Returns(new Mock<DbParameterCollection>().Object);
+                       .Returns(parametersMock.Object);
 
             commandMock.Protected()
                        .Setup<DbParameter>("CreateDbParameter")
