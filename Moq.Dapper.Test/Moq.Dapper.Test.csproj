@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp3.1;netstandard2.1</TargetFrameworks>
+    <TargetFrameworks>netcoreapp3.1;netstandard2.1;net6.0</TargetFrameworks>
     <Version>1.0.0.8</Version>
     <Description>Moq extensions for Dapper methods.</Description>
     <Copyright>Copyright 2017</Copyright>
