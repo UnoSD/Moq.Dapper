@@ -1,4 +1,5 @@
 ﻿using System.Data;
+using System.Threading.Tasks;
 using Dapper;
 using NUnit.Framework;
 
@@ -47,6 +48,19 @@ namespace Moq.Dapper.Test
 
             var result = connection.Object
                                    .Execute("");
+
+            Assert.That(result, Is.EqualTo(1));
+        }
+
+        [Test]
+        public async Task ExecuteAsync()
+        {
+            var connection = new Mock<IDbConnection>();
+
+            connection.SetupDapperAsync(c => c.ExecuteAsync(It.IsAny<string>(), null, null, null, null))
+                      .ReturnsAsync(1);
+
+            var result = await connection.Object.ExecuteAsync("");
 
             Assert.That(result, Is.EqualTo(1));
         }

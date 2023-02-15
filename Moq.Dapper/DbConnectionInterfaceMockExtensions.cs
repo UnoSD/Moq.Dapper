@@ -55,11 +55,19 @@ namespace Moq.Dapper
                 case nameof(SqlMapper.QuerySingleAsync):
                 case nameof(SqlMapper.QuerySingleOrDefaultAsync):
                     return SetupQueryAsync<TResult>(mock);
-
+                case nameof(SqlMapper.ExecuteAsync) when typeof(TResult) == typeof(int):
+                    return (ISetup<IDbConnection, Task<TResult>>)SetupExecuteAsync(mock);
                 default:
                     throw new NotSupportedException();
             }
         }
+
+        public static ISetup<IDbConnection, Task<int>> SetupExecuteAsync(Mock<IDbConnection> mock) =>
+            DbCommandSetup.SetupCommandAsync<int, IDbConnection>(mock, (commandMock, result) =>
+            {
+                commandMock.Setup(x => x.ExecuteNonQueryAsync(It.IsAny<CancellationToken>()))
+                           .ReturnsAsync(() => result());
+            });
 
         static ISetup<IDbConnection, Task<TResult>> SetupQueryAsync<TResult>(Mock<IDbConnection> mock) =>
             DbCommandSetup.SetupCommandAsync<TResult, IDbConnection>(mock, (commandMock, result) =>
