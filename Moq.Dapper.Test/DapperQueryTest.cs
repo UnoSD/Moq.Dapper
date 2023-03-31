@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
+using System.IO;
 using System.Linq;
 using System.Numerics;
 using System.Security.Cryptography;
@@ -281,6 +283,42 @@ namespace Moq.Dapper.Test
 
             Assert.That(actual, Is.Null);
         }
+
+        [Test]
+        public void SetupDapper_SetForKnownNonPrimitiveTypes_QueryShouldBeAbleToReturnMockedCollections()
+        {
+            TestQueryWithKnownNonPrimitiveTypes(new List<FileMode> { FileMode.Open, FileMode.Create });
+            TestQueryWithKnownNonPrimitiveTypes(new List<FileMode?> { FileMode.Open, null });
+            TestQueryWithKnownNonPrimitiveTypes(new List<DateTime> { DateTime.Now, DateTime.Now.AddDays(1) });
+            TestQueryWithKnownNonPrimitiveTypes(new List<DateTime?> { null, DateTime.Now.AddDays(1) });
+            TestQueryWithKnownNonPrimitiveTypes(new List<DateTimeOffset> { DateTimeOffset.UtcNow, DateTimeOffset.Now});
+            TestQueryWithKnownNonPrimitiveTypes(new List<DateTimeOffset?> { null, DateTimeOffset.UtcNow });
+            TestQueryWithKnownNonPrimitiveTypes(new List<decimal> { 1.234m, 4.65m });
+            TestQueryWithKnownNonPrimitiveTypes(new List<decimal?> { null, 4.65m });
+            TestQueryWithKnownNonPrimitiveTypes(new List<Guid> { Guid.NewGuid(), Guid.NewGuid() });
+            TestQueryWithKnownNonPrimitiveTypes(new List<Guid?> { Guid.NewGuid(), null });
+            TestQueryWithKnownNonPrimitiveTypes(new List<string> { "One", "Two" });
+            TestQueryWithKnownNonPrimitiveTypes(new List<string> { "One", null });
+            TestQueryWithKnownNonPrimitiveTypes(new List<TimeSpan> { TimeSpan.MinValue, TimeSpan.MaxValue });
+            TestQueryWithKnownNonPrimitiveTypes(new List<TimeSpan?> { TimeSpan.MinValue, null });
+            TestQueryWithKnownNonPrimitiveTypes(new List<byte[]> { new byte[] { 144, 27, 113, 141, 6, 167, 63, 45, 89, 186, 226, 225, 155, 20, 175, 86 }, new byte[] { 144, 27, 113, 141, 6, 167, 63, 45, 89, 186, 226, 225, 155, 20, 175, 87 }});
+            TestQueryWithKnownNonPrimitiveTypes(new List<byte[]> { new byte[] { 144, 27, 113, 141, 6, 167, 63, 45, 89, 186, 226, 225, 155, 20, 175, 86 }, null });
+        }
+
+        #region Private members
+        private void TestQueryWithKnownNonPrimitiveTypes<TResult>(IEnumerable<TResult> expected)
+        {
+            var connection = new Mock<IDbConnection>();
+
+            connection.SetupDapper(c => c.Query<TResult>(It.IsAny<string>(), It.IsAny<object>(), It.IsAny<IDbTransaction>(), It.IsAny<bool>(), It.IsAny<int?>(), It.IsAny<CommandType?>()))
+                      .Returns(expected);
+
+            var actual = connection.Object.Query<TResult>("");
+
+            Assert.That(actual.Count, Is.EqualTo(expected.Count()));
+            Assert.That(actual, Is.EquivalentTo(expected));
+        }
+        #endregion
 
         public class ComplexType
         {
