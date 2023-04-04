@@ -11,37 +11,28 @@ namespace Moq.Dapper
         internal static DataTable ToDataTable(this IEnumerable results, Type tableType)
         {
             var dataTable = new DataTable();
-
-            if (tableType.IsPrimitive || tableType == typeof(string))
+            
+            var underlyingType = GetDataColumnType(tableType);
+            
+            if (IsADapperQuerySupportedType(underlyingType))
             {
-                dataTable.Columns.Add();
+                dataTable.Columns.Add(new DataColumn("Column1", underlyingType));
 
                 foreach (var element in results)
-                    dataTable.Rows.Add(element);
+                {
+                    if(element == null)
+                    {
+                        dataTable.Rows.Add(DBNull.Value);
+                    }
+                    else
+                    {
+                        dataTable.Rows.Add(element);
+                    }
+                }
+                    
             }
             else
             {
-                bool IsNullable(Type t) =>
-                    t.IsGenericType &&
-                    t.GetGenericTypeDefinition() == typeof(Nullable<>);
-
-                Type GetDataColumnType(Type source) =>
-                    IsNullable(source) ?
-                        Nullable.GetUnderlyingType(source) :
-                        source;
-
-                bool IsMatchingType(Type t) =>
-                    t.IsPrimitive ||
-                    t.IsEnum ||
-                    t == typeof(DateTime) ||
-                    t == typeof(DateTimeOffset) ||
-                    t == typeof(decimal) ||
-                    t == typeof(BigInteger) ||
-                    t == typeof(Guid) ||
-                    t == typeof(string) ||
-                    t == typeof(TimeSpan) ||
-                    t == typeof(byte[]);
-
                 var properties =
                     tableType.GetProperties().
                               Where
@@ -61,6 +52,32 @@ namespace Moq.Dapper
                 foreach (var element in results)
                     dataTable.Rows.Add(valuesFactory.Select(getValue => getValue(element)).ToArray());
             }
+            
+            bool IsNullable(Type t) =>
+                    t.IsGenericType &&
+                    t.GetGenericTypeDefinition() == typeof(Nullable<>);
+
+            Type GetDataColumnType(Type source) =>
+                IsNullable(source) ?
+                    Nullable.GetUnderlyingType(source) :
+                    source;
+
+            bool IsADapperQuerySupportedType(Type t) =>
+                    t.IsPrimitive ||
+                    t.IsEnum ||
+                    t == typeof(DateTime) ||
+                    t == typeof(DateTimeOffset) ||
+                    t == typeof(decimal) ||
+                    t == typeof(Guid) ||
+                    t == typeof(string) ||
+                    t == typeof(TimeSpan) ||
+                    t == typeof(byte[]);
+
+            //Dapper does not list BigInteger in it's type map.
+            //So, Query<BigInteger> returns 0 for every BigInteger in Response.
+            bool IsMatchingType(Type t) =>
+                    IsADapperQuerySupportedType(t) ||
+                    t == typeof(BigInteger);
 
             return dataTable;
         }
