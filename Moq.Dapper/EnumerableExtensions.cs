@@ -11,6 +11,8 @@ namespace Moq.Dapper
     {
         internal static DataTable ToDataTable(this IEnumerable results, Type tableType)
         {
+            var dataTable = new DataTable();
+            
             bool IsNullable(Type t) =>
                     t.IsGenericType &&
                     t.GetGenericTypeDefinition() == typeof(Nullable<>);
@@ -38,8 +40,6 @@ namespace Moq.Dapper
                     t == typeof(BigInteger);
 
             var underlyingType = GetDataColumnType(tableType);
-
-            var dataTable = new DataTable();
 
             if (IsADapperQuerySupportedType(underlyingType))
             {
