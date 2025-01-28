@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
+using System.Dynamic;
 using System.Linq;
 using System.Numerics;
-using System.Threading.Tasks;
 using Dapper;
 using NUnit.Framework;
 
@@ -43,6 +43,21 @@ namespace Moq.Dapper.Test
 
             Assert.That(actual.Count, Is.EqualTo(expected.Length));
             Assert.That(actual, Is.EquivalentTo(expected));
+        }
+
+        [Test]
+        public void QueryAsyncDynamicWithDynamicParameters()
+        {
+            var _results = CreateExpandoObjectList();
+
+            var connection = new Mock<IDbConnection>();
+
+            connection.SetupDapperAsync(c => c.QueryAsync<dynamic>(It.IsAny<string>(), null, null, null, null))
+                      .ReturnsAsync(_results);
+
+            var actual = connection.Object.QueryAsync<dynamic>("").GetAwaiter().GetResult().ToList();
+
+            Assert.That(actual.Count, Is.EqualTo(_results.Count));
         }
 
         [Test]
@@ -372,6 +387,22 @@ namespace Moq.Dapper.Test
                                           .GetResult();
 
             Assert.That(actual, Is.Null);
+        }
+
+        public static List<ExpandoObject> CreateExpandoObjectList(short numberOfRecords = 3)
+        {
+            var expandoList = new List<ExpandoObject>();
+
+            for (int i = 0; i < numberOfRecords ; i++)
+            {
+                dynamic expando = new ExpandoObject();
+                expando.Name = $"Person {i}";
+                expando.Age = 20 + i;
+                expando.Email = $"person{i}@example.com";
+                expandoList.Add(expando);
+            }
+
+            return expandoList;
         }
 
         public class ComplexType
