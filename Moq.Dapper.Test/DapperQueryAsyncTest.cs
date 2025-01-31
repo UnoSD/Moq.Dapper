@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
@@ -48,16 +48,16 @@ namespace Moq.Dapper.Test
         [Test]
         public void QueryAsyncDynamicWithDynamicParameters()
         {
-            var _results = CreateExpandoObjectList();
+            var expected = CreateExpandoObjectList();
 
             var connection = new Mock<IDbConnection>();
 
             connection.SetupDapperAsync(c => c.QueryAsync<dynamic>(It.IsAny<string>(), null, null, null, null))
-                      .ReturnsAsync(_results);
+                      .ReturnsAsync(expected);
 
             var actual = connection.Object.QueryAsync<dynamic>("").GetAwaiter().GetResult().ToList();
 
-            Assert.That(actual.Count, Is.EqualTo(_results.Count));
+            Assert.That(actual.Count, Is.EqualTo(expected.Count));
         }
 
         [Test]
