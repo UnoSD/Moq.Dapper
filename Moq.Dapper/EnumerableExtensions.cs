@@ -1,6 +1,8 @@
-﻿using System;
+using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Data;
+using System.Dynamic;
 using System.Linq;
 using System.Numerics;
 
@@ -18,6 +20,25 @@ namespace Moq.Dapper
 
                 foreach (var element in results)
                     dataTable.Rows.Add(element);
+            }
+            else if (results.Cast<object>().All(item => item is ExpandoObject))
+            {
+                if (results == null || !results.Cast<object>().Any())
+                    return dataTable;
+
+                var firstExpando = (IDictionary<string, object>)results.Cast<object>().First();
+                foreach (var key in firstExpando.Keys)
+                    dataTable.Columns.Add(key);
+
+                foreach (var item in results.Cast<ExpandoObject>())
+                {
+                    var row = dataTable.NewRow();
+                    
+                    foreach (var kvp in (IDictionary<string, object>)item)
+                        row[kvp.Key] = kvp.Value ?? DBNull.Value;
+
+                    dataTable.Rows.Add(row);
+                }
             }
             else
             {
@@ -39,6 +60,7 @@ namespace Moq.Dapper
                     t == typeof(BigInteger) ||
                     t == typeof(Guid) ||
                     t == typeof(string) ||
+                    t == typeof(DynamicObject) ||
                     t == typeof(TimeSpan) ||
                     t == typeof(byte[]);
 
